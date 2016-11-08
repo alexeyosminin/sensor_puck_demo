@@ -1,0 +1,47 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.2.2'
+        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenCentral()
+        maven { url "https://clojars.org/repo/" }
+        maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
+        maven { url 'https://jitpack.io' }
+    }
+}
+
+task clean(type: Delete) {
+    delete rootProject.buildDir
+}
+
+ext.deps = [
+        // Android
+        supportannotations: 'com.android.support:support-annotations:23.1.1',
+        appcompat: 'com.android.support:appcompat-v7:24.2.1',
+        design: 'com.android.support:design:24.2.1',
+
+        // RxJava
+        rxjava: 'io.reactivex:rxjava:1.1.1',
+        rxandroid: 'io.reactivex:rxandroid:1.1.0',
+
+        // ButterKnife
+        butterknife: 'com.jakewharton:butterknife:7.0.1',
+
+        // Dagger
+        dagger: 'com.google.dagger:dagger:2.0.2',
+        daggercompiler: 'com.google.dagger:dagger-compiler:2.0.2',
+        glassfishannotations: 'org.glassfish:javax.annotation:10.0-b28',
+]
