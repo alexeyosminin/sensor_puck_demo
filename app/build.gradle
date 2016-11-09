@@ -36,4 +36,8 @@ dependencies {
     compile deps.dagger
     apt deps.daggercompiler
     provided deps.glassfishannotations
+
+    //CardView
+    compile deps.cardview
+    compile deps.recycler
 }

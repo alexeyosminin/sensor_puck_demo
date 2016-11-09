@@ -1,8 +1,11 @@
 package com.osminin.sensorpuckdemo.ui;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,6 +18,7 @@ import android.view.MenuItem;
 
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
+import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -35,6 +39,17 @@ public class MainActivity extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        if (savedInstanceState == null) {
+            BaseFragment spListFragment = new SPListFragment();
+            showHomeScreen(spListFragment);
+        }
+    }
+
+    public void showHomeScreen(BaseFragment fragment) {
+        getSupportFragmentManager().popBackStack();
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(R.id.content_main, fragment);
+        transaction.commit();
     }
 
     @Override

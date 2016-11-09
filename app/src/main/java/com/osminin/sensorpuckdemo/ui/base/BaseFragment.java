@@ -20,4 +20,8 @@ public class BaseFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         mContext = getContext();
     }
+
+    public String getFragmentTag() {
+        return this.getClass().getName().toString();
+    }
 }

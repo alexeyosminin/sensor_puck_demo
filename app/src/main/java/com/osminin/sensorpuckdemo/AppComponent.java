@@ -1,6 +1,7 @@
 package com.osminin.sensorpuckdemo;
 
 import com.osminin.sensorpuckdemo.ui.MainActivity;
+import com.osminin.sensorpuckdemo.ui.SPDetailsFragment;
 import com.osminin.sensorpuckdemo.ui.SPListFragment;
 
 import javax.inject.Singleton;
@@ -17,5 +18,8 @@ import dagger.Component;
 @Singleton
 public interface AppComponent {
     MainActivity inject(MainActivity activity);
+
     SPListFragment inject(SPListFragment fragment);
+
+    SPDetailsFragment inject(SPDetailsFragment fragment);
 }
