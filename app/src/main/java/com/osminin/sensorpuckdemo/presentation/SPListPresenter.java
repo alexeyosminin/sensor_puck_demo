@@ -1,25 +1,32 @@
 package com.osminin.sensorpuckdemo.presentation;
 
-import android.os.Handler;
+import android.util.Log;
 
+import com.osminin.sensorpuckdemo.ble.BleSPScanner;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.inject.Inject;
+
+import rx.Subscriber;
 
 /**
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenter implements Presenter<SPListView> {
-
+public class SPListPresenter extends Subscriber<SensorPuckModel> implements Presenter<SPListView> {
+    private static final String TAG = SPListPresenter.class.getSimpleName();
+    @Inject
+    BleSPScanner mScanner;
     private SPListView mView;
+    private Set<SensorPuckModel> mFoundSP;
 
     @Inject
     SPListPresenter() {
-
+        mFoundSP = new HashSet<>();
     }
 
     @Override
@@ -28,22 +35,31 @@ public class SPListPresenter implements Presenter<SPListView> {
     }
 
     public void startScan() {
-        //TODO: start ble device scanning
-        //fake data:
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                List<SensorPuckModel> list = new ArrayList<>();
-                for (int i = 0; i < 10; ++i) {
-                    list.add(new SensorPuckModel());
-                }
-                mView.updateDeviceList(list);
-            }
-        }, 3000);
+        add(mScanner.subscribe(this));
+    }
+
+    public void stopScan() {
+        unsubscribe();
     }
 
     public void onDeviceSelected(SensorPuckModel model) {
         mView.showDetailsFragment(model);
+    }
+
+    @Override
+    public void onCompleted() {
+        Log.d(TAG, "onCompleted()");
+    }
+
+    @Override
+    public void onError(Throwable e) {
+        Log.e(TAG, e.toString());
+    }
+
+    @Override
+    public void onNext(SensorPuckModel sensorPuckModel) {
+        Log.d(TAG, "onNext()");
+        mFoundSP.add(sensorPuckModel);
+        mView.updateDeviceList(new ArrayList<>(mFoundSP));
     }
 }

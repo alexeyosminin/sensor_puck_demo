@@ -11,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
@@ -45,7 +46,8 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     private List<SensorPuckModel> mDevices;
     private SPAdapter mAdapter;
 
-    @Override public void onCreate(@Nullable Bundle savedInstanceState) {
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         App.getAppComponent(getActivity()).inject(this);
     }
@@ -57,17 +59,31 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         return mRootView;
     }
 
-    @Override public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         ButterKnife.bind(this, view);
         initList();
         mPresenter.setView(this);
     }
 
-    @Override public void onDestroyView() {
+    @Override
+    public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
         mPresenter.setView(null);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mPresenter.startScan();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mPresenter.stopScan();
     }
 
     @Override
@@ -99,7 +115,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
                 observeOn(AndroidSchedulers.mainThread()).
                 subscribe(this);
         mRecyclerView.setAdapter(mAdapter);
-        mPresenter.startScan();
     }
 
     @Override
@@ -117,7 +132,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         mPresenter.onDeviceSelected(sensorPuckModel);
     }
 
-    private class SPAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    class SPAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         private final PublishSubject<SensorPuckModel> mOnClickSubject = PublishSubject.create();
 
@@ -131,7 +146,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final SensorPuckModel model = mDevices.get(position);
-
+            ((SPViewHolder) holder).mCardName.setText(model.getName());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -145,15 +160,18 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
             return mDevices == null ? 0 : mDevices.size();
         }
 
-        private class SPViewHolder extends RecyclerView.ViewHolder {
+        public Observable<SensorPuckModel> getPositionClicks() {
+            return mOnClickSubject.asObservable();
+        }
+
+        class SPViewHolder extends RecyclerView.ViewHolder {
+            @Bind(R.id.sp_card_name)
+            TextView mCardName;
 
             public SPViewHolder(View itemView) {
                 super(itemView);
+                ButterKnife.bind(this, itemView);
             }
-        }
-
-        public Observable<SensorPuckModel> getPositionClicks(){
-            return mOnClickSubject.asObservable();
         }
     }
 }
