@@ -1,18 +1,31 @@
 package com.osminin.sensorpuckdemo.model;
 
-import android.content.Intent;
+import android.os.Parcel;
+import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by osminin on 09.11.2016.
  */
 
-public final class SensorPuckModel {
+public final class SensorPuckModel implements Parcelable {
 
+    @SuppressWarnings("unused")
+    public static final Parcelable.Creator<SensorPuckModel> CREATOR = new Parcelable.Creator<SensorPuckModel>() {
+        @Override
+        public SensorPuckModel createFromParcel(Parcel in) {
+            return new SensorPuckModel(in);
+        }
+
+        @Override
+        public SensorPuckModel[] newArray(int size) {
+            return new SensorPuckModel[size];
+        }
+    };
     private String mAddress;
     private String mName;
-
     private int mMeasurementMode;
     private int mSequence;
     private float mHumidity;
@@ -24,7 +37,6 @@ public final class SensorPuckModel {
     private int mHRMRate;
     private List<Integer> mHRMSample;
     private int mHRMPrevSample;
-
     private int mPrevSequence;
     private int mRecvCount;
     private int mPrevCount;
@@ -32,6 +44,39 @@ public final class SensorPuckModel {
     private int mLostAdv;
     private int mLostCount;
     private int mIdleCount;
+    private int mSignalStrength;
+
+    public SensorPuckModel() {
+    }
+
+    protected SensorPuckModel(Parcel in) {
+        mAddress = in.readString();
+        mName = in.readString();
+        mMeasurementMode = in.readInt();
+        mSequence = in.readInt();
+        mHumidity = in.readFloat();
+        mTemperature = in.readFloat();
+        mAmbientLight = in.readInt();
+        mUVIndex = in.readInt();
+        mBattery = in.readFloat();
+        mHRMState = in.readInt();
+        mHRMRate = in.readInt();
+        if (in.readByte() == 0x01) {
+            mHRMSample = new ArrayList<>();
+            in.readList(mHRMSample, Integer.class.getClassLoader());
+        } else {
+            mHRMSample = null;
+        }
+        mHRMPrevSample = in.readInt();
+        mPrevSequence = in.readInt();
+        mRecvCount = in.readInt();
+        mPrevCount = in.readInt();
+        mUniqueCount = in.readInt();
+        mLostAdv = in.readInt();
+        mLostCount = in.readInt();
+        mIdleCount = in.readInt();
+        mSignalStrength = in.readInt();
+    }
 
     public String getAddress() {
         return mAddress;
@@ -193,6 +238,14 @@ public final class SensorPuckModel {
         mIdleCount = idleCount;
     }
 
+    public int getSignalStrength() {
+        return mSignalStrength;
+    }
+
+    public void setSignalStrength(int signalStrength) {
+        mSignalStrength = signalStrength;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -210,5 +263,40 @@ public final class SensorPuckModel {
         int result = getAddress().hashCode();
         result = 31 * result + getName().hashCode();
         return result;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mAddress);
+        dest.writeString(mName);
+        dest.writeInt(mMeasurementMode);
+        dest.writeInt(mSequence);
+        dest.writeFloat(mHumidity);
+        dest.writeFloat(mTemperature);
+        dest.writeInt(mAmbientLight);
+        dest.writeInt(mUVIndex);
+        dest.writeFloat(mBattery);
+        dest.writeInt(mHRMState);
+        dest.writeInt(mHRMRate);
+        if (mHRMSample == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(mHRMSample);
+        }
+        dest.writeInt(mHRMPrevSample);
+        dest.writeInt(mPrevSequence);
+        dest.writeInt(mRecvCount);
+        dest.writeInt(mPrevCount);
+        dest.writeInt(mUniqueCount);
+        dest.writeInt(mLostAdv);
+        dest.writeInt(mLostCount);
+        dest.writeInt(mIdleCount);
+        dest.writeInt(mSignalStrength);
     }
 }

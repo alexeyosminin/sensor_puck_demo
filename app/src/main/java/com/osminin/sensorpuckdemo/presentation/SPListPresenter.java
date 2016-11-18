@@ -11,18 +11,20 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import rx.Subscriber;
+import rx.Observer;
+import rx.Subscription;
 
 /**
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenter extends Subscriber<SensorPuckModel> implements Presenter<SPListView> {
+public class SPListPresenter implements Presenter<SPListView>, Observer<SensorPuckModel> {
     private static final String TAG = SPListPresenter.class.getSimpleName();
     @Inject
     BleSPScanner mScanner;
     private SPListView mView;
     private Set<SensorPuckModel> mFoundSP;
+    private Subscription mSubscription;
 
     @Inject
     SPListPresenter() {
@@ -35,11 +37,11 @@ public class SPListPresenter extends Subscriber<SensorPuckModel> implements Pres
     }
 
     public void startScan() {
-        add(mScanner.subscribe(this));
+        mSubscription = mScanner.subscribe(this);
     }
 
     public void stopScan() {
-        unsubscribe();
+        mSubscription.unsubscribe();
     }
 
     public void onDeviceSelected(SensorPuckModel model) {
@@ -59,7 +61,11 @@ public class SPListPresenter extends Subscriber<SensorPuckModel> implements Pres
     @Override
     public void onNext(SensorPuckModel sensorPuckModel) {
         Log.d(TAG, "onNext()");
+        if (mFoundSP.contains(sensorPuckModel)) {
+            mFoundSP.remove(sensorPuckModel);
+        }
         mFoundSP.add(sensorPuckModel);
+
         mView.updateDeviceList(new ArrayList<>(mFoundSP));
     }
 }

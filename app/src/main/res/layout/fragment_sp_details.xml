@@ -2,7 +2,86 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:clickable="true"
-                android:background="@android:color/holo_green_light">
+                android:background="@android:color/background_light"
+                android:clickable="true">
+
+    <TextView
+        android:id="@+id/sp_details_temperature_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/temperature"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_temperature"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sp_details_temperature_label"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_humidity_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sp_details_temperature_label"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/humidity"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_humidity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sp_details_humidity_label"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_light_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sp_details_humidity_label"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/ambient_light"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_light"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sp_details_light_label"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_uv_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sp_details_light_label"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/uv"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_uv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sp_details_uv_label"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
 
 </RelativeLayout>

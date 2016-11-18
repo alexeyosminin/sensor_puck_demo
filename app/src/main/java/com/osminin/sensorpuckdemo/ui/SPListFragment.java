@@ -3,6 +3,7 @@ package com.osminin.sensorpuckdemo.ui;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -24,12 +25,14 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
+
+import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
 
 /**
  * Created by osminin on 08.11.2016.
@@ -40,7 +43,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Inject
     SPListPresenter mPresenter;
 
-    @Bind(R.id.sp_list)
+    @BindView(R.id.sp_list)
     RecyclerView mRecyclerView;
 
     private List<SensorPuckModel> mDevices;
@@ -62,7 +65,8 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.bind(this, view);
+        ButterKnife.setDebug(true);
+        mUnbinder = ButterKnife.bind(this, view);
         initList();
         mPresenter.setView(this);
     }
@@ -70,7 +74,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        ButterKnife.unbind(this);
         mPresenter.setView(null);
     }
 
@@ -95,8 +98,12 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Override
     public void showDetailsFragment(SensorPuckModel model) {
         BaseFragment fragment = new SPDetailsFragment();
-        FragmentTransaction transaction = ((AppCompatActivity) mContext).
-                getSupportFragmentManager().beginTransaction();
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(SP_MODEL_EXTRA, model);
+        fragment.setArguments(bundle);
+        FragmentManager fragmentManager = ((AppCompatActivity) mContext).
+                getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.content_main, fragment);
         transaction.addToBackStack(fragment.getFragmentTag());
         transaction.commit();
@@ -147,6 +154,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final SensorPuckModel model = mDevices.get(position);
             ((SPViewHolder) holder).mCardName.setText(model.getName());
+            ((SPViewHolder) holder).mSignal.setText(model.getSignalStrength() + " dBm");
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -165,8 +173,11 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         }
 
         class SPViewHolder extends RecyclerView.ViewHolder {
-            @Bind(R.id.sp_card_name)
+            @BindView(R.id.sp_card_name)
             TextView mCardName;
+
+            @BindView(R.id.sp_card_signal)
+            TextView mSignal;
 
             public SPViewHolder(View itemView) {
                 super(itemView);

@@ -1,7 +1,6 @@
 package com.osminin.sensorpuckdemo.ble;
 
 import android.bluetooth.le.ScanResult;
-import android.util.Log;
 
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
@@ -38,16 +37,16 @@ final class SensorPuckParser {
         SensorPuckModel spModel = new SensorPuckModel();
         spModel.setAddress(result.getDevice().getAddress());
         spModel.setName(defaultName(spModel.getAddress()));
+        spModel.setSignalStrength(result.getRssi());
         if (data[5] == 0x34) {
             // If its an old style advertisement
         } else if (data[5] == 0x35) {
             // If its a new style advertisement
             if (data[7] == ENVIRONMENTAL_MODE) {
-                Log.d(TAG, "ENVIRONMENTAL_MODE");
                 parseEnvironmental(spModel, data);
             }
             if (data[7] == BIOMETRIC_MODE) {
-                Log.d(TAG, "BIOMETRIC_MODE");
+                parseBiometric(spModel, data);
             }
         }
         return spModel;
@@ -64,13 +63,20 @@ final class SensorPuckParser {
     }
 
     private static void parseEnvironmental(SensorPuckModel spModel, byte[] data) {
-        spModel.setMeasurementMode(0);
+        spModel.setMeasurementMode(ENVIRONMENTAL_MODE);
         spModel.setSequence(Int8(data[5 + 3]));
         spModel.setHumidity(((float) Int16(data[8 + 3], data[9 + 3])) / 10.0f);
         spModel.setTemperature(((float) Int16(data[10 + 3], data[11 + 3])) / 10.0f);
         spModel.setAmbientLight(Int16(data[7 + 3], data[13 + 3]) * 7);
         spModel.setUVIndex(Int8(data[14 + 3]));
         spModel.setBattery(((float) Int8(data[15 + 3])) / 10.0f);
+    }
+
+    private static void parseBiometric(SensorPuckModel spModel, byte[] data) {
+        spModel.setMeasurementMode(BIOMETRIC_MODE);
+        spModel.setSequence(Int8(data[8]));
+        spModel.setHRMState(Int8(data[11]));
+        spModel.setHRMRate(Int8(data[12]));
     }
 
     private static int Int8(byte data) {

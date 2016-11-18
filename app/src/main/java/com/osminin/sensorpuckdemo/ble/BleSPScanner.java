@@ -11,54 +11,76 @@ import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import java.util.List;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
-import rx.Observable;
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
+import rx.functions.Action0;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 /**
  * Created by osminin on 16.11.2016.
  */
 
 public final class BleSPScanner {
-    private Observable<SensorPuckModel> mBleScanner;
+    private PublishSubject<SensorPuckModel> mSubject = PublishSubject.create();
+    private ScanCallback mScanCallback;
+    private BluetoothLeScanner mScanner;
+    private boolean isRunning;
 
     @Inject
+    @Singleton
     public BleSPScanner(final BluetoothManager bluetoothManager) {
-        mBleScanner = Observable.create(new Observable.OnSubscribe<SensorPuckModel>() {
+        BluetoothAdapter adapter = bluetoothManager.getAdapter();
+        mScanner = adapter.getBluetoothLeScanner();
+        mScanCallback = new ScanCallback() {
             @Override
-            public void call(final Subscriber<? super SensorPuckModel> subscriber) {
-                BluetoothAdapter adapter = bluetoothManager.getAdapter();
-                BluetoothLeScanner scanner = adapter.getBluetoothLeScanner();
-                scanner.startScan(new ScanCallback() {
-                    @Override
-                    public void onScanResult(int callbackType, ScanResult result) {
-                        if (SensorPuckParser.isSensorPuckRecord(result)) {
-                            SensorPuckModel spModel = SensorPuckParser.parse(result);
-                            subscriber.onNext(spModel);
-                        }
-                    }
-
-                    @Override
-                    public void onBatchScanResults(List<ScanResult> results) {
-                        List<SensorPuckModel> spModels = SensorPuckParser.parseBatchResult(results);
-                        for (SensorPuckModel spModel : spModels) {
-                            subscriber.onNext(spModel);
-                        }
-                    }
-
-                    @Override
-                    public void onScanFailed(int errorCode) {
-                        subscriber.onError(new Exception("error: " + errorCode));
-                    }
-                });
+            public void onScanResult(int callbackType, ScanResult result) {
+                if (SensorPuckParser.isSensorPuckRecord(result)) {
+                    SensorPuckModel spModel = SensorPuckParser.parse(result);
+                    mSubject.onNext(spModel);
+                }
+                stopScanIfNoObservers();
             }
-        }).subscribeOn(Schedulers.computation());
+
+            @Override
+            public void onBatchScanResults(List<ScanResult> results) {
+                List<SensorPuckModel> spModels = SensorPuckParser.parseBatchResult(results);
+                for (SensorPuckModel spModel : spModels) {
+                    mSubject.onNext(spModel);
+                }
+                stopScanIfNoObservers();
+            }
+
+            @Override
+            public void onScanFailed(int errorCode) {
+                mSubject.onError(new Exception("error: " + errorCode));
+                stopScanIfNoObservers();
+            }
+        };
     }
 
     public Subscription subscribe(Observer<? super SensorPuckModel> observer) {
-        return mBleScanner.subscribe(observer);
+        return mSubject
+                .asObservable()
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        if (!isRunning) {
+                            mScanner.startScan(mScanCallback);
+                            isRunning = true;
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.immediate())
+                .subscribe(observer);
+    }
+
+    private void stopScanIfNoObservers() {
+        if (!mSubject.hasObservers()) {
+            mScanner.stopScan(mScanCallback);
+            isRunning = false;
+        }
     }
 }
