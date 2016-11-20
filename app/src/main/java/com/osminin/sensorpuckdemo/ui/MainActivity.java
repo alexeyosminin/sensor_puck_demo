@@ -2,38 +2,61 @@ package com.osminin.sensorpuckdemo.ui;
 
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, FragmentManager.OnBackStackChangedListener {
+
+    private ActionBarDrawerToggle mActionBarDrawerToggle;
+
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         App.getAppComponent(this).inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
+        setSupportActionBar(mToolbar);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
+        DrawerLayout drawer = ButterKnife.findById(this, R.id.drawer_layout);
+        mActionBarDrawerToggle = new ActionBarDrawerToggle(
+                this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.setDrawerListener(mActionBarDrawerToggle);
+        mActionBarDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.onBackPressed();
+            }
+        });
+        setBurgerButtonState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = ButterKnife.findById(this, R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        getSupportFragmentManager().addOnBackStackChangedListener(this);
         if (savedInstanceState == null) {
             BaseFragment spListFragment = new SPListFragment();
             showHomeScreen(spListFragment);
@@ -101,5 +124,32 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        List<Fragment> fragments = new ArrayList<>();
+        for (Fragment fragment : fragmentManager.getFragments()) {
+            if (fragment != null) {
+                fragments.add(fragment);
+            }
+        }
+        int size = fragments.size();
+        BaseFragment lastFragment = (BaseFragment) fragments.get(size - 1);
+        if (lastFragment != null) {
+            mToolbar.setTitle(lastFragment.getTitle());
+        } else {
+            String title = getString(R.string.app_name);
+            mToolbar.setTitle(title);
+        }
+        setBurgerButtonState();
+    }
+
+    private void setBurgerButtonState() {
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+        mActionBarDrawerToggle.setDrawerIndicatorEnabled(count == 0);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(count > 0);
+        mActionBarDrawerToggle.syncState();
     }
 }

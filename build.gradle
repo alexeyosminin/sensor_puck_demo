@@ -38,7 +38,8 @@ ext.deps = [
         rxandroid: 'io.reactivex:rxandroid:1.1.0',
 
         // ButterKnife
-        butterknife: 'com.jakewharton:butterknife:7.0.1',
+        butterknife: 'com.jakewharton:butterknife:8.4.0',
+        butterknifeprocessor: 'com.jakewharton:butterknife-compiler:8.4.0',
 
         // Dagger
         dagger: 'com.google.dagger:dagger:2.0.2',

@@ -1,18 +1,24 @@
 package com.osminin.sensorpuckdemo.presentation;
 
+import android.os.Handler;
 import android.util.Log;
 
 import com.osminin.sensorpuckdemo.ble.BleSPScanner;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import javax.inject.Inject;
 
 import rx.Observer;
 import rx.Subscription;
+
+import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 
 /**
  * Created by osminin on 08.11.2016.
@@ -23,12 +29,12 @@ public class SPListPresenter implements Presenter<SPListView>, Observer<SensorPu
     @Inject
     BleSPScanner mScanner;
     private SPListView mView;
-    private Set<SensorPuckModel> mFoundSP;
+    private Map<SensorPuckModel, Handler> mFoundSP;
     private Subscription mSubscription;
 
     @Inject
     SPListPresenter() {
-        mFoundSP = new HashSet<>();
+        mFoundSP = new HashMap<>();
     }
 
     @Override
@@ -42,6 +48,7 @@ public class SPListPresenter implements Presenter<SPListView>, Observer<SensorPu
 
     public void stopScan() {
         mSubscription.unsubscribe();
+        freeDeviceMap();
     }
 
     public void onDeviceSelected(SensorPuckModel model) {
@@ -59,13 +66,32 @@ public class SPListPresenter implements Presenter<SPListView>, Observer<SensorPu
     }
 
     @Override
-    public void onNext(SensorPuckModel sensorPuckModel) {
+    public void onNext(final SensorPuckModel sensorPuckModel) {
         Log.d(TAG, "onNext()");
-        if (mFoundSP.contains(sensorPuckModel)) {
-            mFoundSP.remove(sensorPuckModel);
+        if (mFoundSP.containsKey(sensorPuckModel)) {
+            Handler handler = mFoundSP.remove(sensorPuckModel);
+            handler.removeCallbacksAndMessages(null);
         }
-        mFoundSP.add(sensorPuckModel);
+        Handler selfRemoveHandler = new Handler();
+        selfRemoveHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mFoundSP.remove(sensorPuckModel);
+                if (mView != null) {
+                    mView.updateDeviceList(new ArrayList<>(mFoundSP.keySet()));
+                }
+            }
+        }, SP_DISCOVERY_TIMEOUT);
+        mFoundSP.put(sensorPuckModel, selfRemoveHandler);
 
-        mView.updateDeviceList(new ArrayList<>(mFoundSP));
+        mView.updateDeviceList(new ArrayList<>(mFoundSP.keySet()));
+    }
+
+    private void freeDeviceMap() {
+        Iterator<Map.Entry<SensorPuckModel, Handler>> it = mFoundSP.entrySet().iterator();
+        while (it.hasNext()) {
+            it.next().getValue().removeCallbacksAndMessages(null);
+            it.remove();
+        }
     }
 }

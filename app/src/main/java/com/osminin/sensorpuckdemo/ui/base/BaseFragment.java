@@ -12,7 +12,7 @@ import butterknife.Unbinder;
  * Created by osminin on 08.11.2016.
  */
 
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     protected View mRootView;
     protected Context mContext;
@@ -29,6 +29,8 @@ public class BaseFragment extends Fragment {
         super.onDestroyView();
         mUnbinder.unbind();
     }
+
+    public abstract String getTitle();
 
     public String getFragmentTag() {
         return this.getClass().getName().toString();

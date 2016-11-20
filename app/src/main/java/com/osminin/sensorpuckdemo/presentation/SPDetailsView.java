@@ -8,4 +8,5 @@ import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 public interface SPDetailsView {
     void update(SensorPuckModel model);
+    void showError();
 }

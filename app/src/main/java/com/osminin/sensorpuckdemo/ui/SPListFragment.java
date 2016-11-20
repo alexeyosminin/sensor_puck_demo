@@ -96,6 +96,11 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
+    public String getTitle() {
+        return mContext.getString(R.string.app_name);
+    }
+
+    @Override
     public void showDetailsFragment(SensorPuckModel model) {
         BaseFragment fragment = new SPDetailsFragment();
         Bundle bundle = new Bundle();

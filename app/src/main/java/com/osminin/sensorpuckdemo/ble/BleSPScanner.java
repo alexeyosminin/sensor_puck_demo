@@ -16,6 +16,7 @@ import javax.inject.Singleton;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Action0;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
 
@@ -74,6 +75,24 @@ public final class BleSPScanner {
                     }
                 })
                 .subscribeOn(Schedulers.immediate())
+                .subscribe(observer);
+    }
+
+    public Subscription subscribe(Observer<? super SensorPuckModel> observer,
+                                  Func1<? super SensorPuckModel, Boolean> predicate) {
+        return mSubject
+                .asObservable()
+                .doOnSubscribe(new Action0() {
+                    @Override
+                    public void call() {
+                        if (!isRunning) {
+                            mScanner.startScan(mScanCallback);
+                            isRunning = true;
+                        }
+                    }
+                })
+                .subscribeOn(Schedulers.immediate())
+                .filter(predicate)
                 .subscribe(observer);
     }
 
