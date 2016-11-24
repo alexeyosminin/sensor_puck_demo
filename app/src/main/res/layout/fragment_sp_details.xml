@@ -84,4 +84,44 @@
         android:textColor="@android:color/darker_gray"
         android:textSize="26sp"/>
 
+    <TextView
+        android:id="@+id/sp_details_hr_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sp_details_uv_label"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/heart_rate"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_hr"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sp_details_hr_label"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_battery_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/sp_details_hr_label"
+        android:layout_margin="@dimen/fab_margin"
+        android:text="@string/battery"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
+    <TextView
+        android:id="@+id/sp_details_battery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/sp_details_battery_label"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/fab_margin"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="26sp"/>
+
 </RelativeLayout>

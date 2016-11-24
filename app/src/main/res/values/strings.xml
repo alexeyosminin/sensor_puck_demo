@@ -10,4 +10,14 @@
     <string name="humidity">Humidity</string>
     <string name="ambient_light">Ambient Light</string>
     <string name="uv">UV</string>
+    <string name="heart_rate">Heart Rate</string>
+    <string name="hrm_state">HRM State</string>
+    <string name="battery">Battery Level</string>
+
+    <string name="hrm_state_idle">Idle</string>
+    <string name="hrm_state_no_signal">No Signal</string>
+    <string name="hrm_state_acquiring">Acquiring</string>
+    <string name="hrm_state_reposition">Re-position Finger</string>
+    <string name="hrm_state_error">Error</string>
+
 </resources>

@@ -63,12 +63,17 @@ public final class SPDetailsPresenter implements Presenter<SPDetailsView>, Obser
     @Override
     public void onError(Throwable e) {
         //todo:
+        e.printStackTrace();
     }
 
     @Override
     public void onNext(SensorPuckModel sensorPuckModel) {
         mTimeoutHandler.removeCallbacksAndMessages(null);
         mTimeoutHandler.postDelayed(mDestroyViewTask, SP_DISCOVERY_TIMEOUT);
+        if (sensorPuckModel.getHRMSample().size() > 0) {
+            sensorPuckModel.setHRMPrevSample(sensorPuckModel.getHRMSample().get(sensorPuckModel.getHRMSample().size() - 1));
+        }
+        mModel = sensorPuckModel;
         mView.update(sensorPuckModel);
     }
 

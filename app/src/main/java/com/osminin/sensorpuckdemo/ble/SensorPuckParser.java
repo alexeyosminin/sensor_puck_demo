@@ -7,6 +7,8 @@ import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.R.attr.x;
+
 /**
  * Created by osminin on 17.11.2016.
  */
@@ -25,6 +27,7 @@ final class SensorPuckParser {
     public static final int SD_HRM_SAMPLE = 18;
     public static final int ENVIRONMENTAL_MODE = 0;
     public static final int BIOMETRIC_MODE = 1;
+    public static final int HRM_SAMPLE_COUNT = 5;
     private static final String TAG = SensorPuckParser.class.getSimpleName();
 
     static boolean isSensorPuckRecord(ScanResult result) {
@@ -77,6 +80,9 @@ final class SensorPuckParser {
         spModel.setSequence(Int8(data[8]));
         spModel.setHRMState(Int8(data[11]));
         spModel.setHRMRate(Int8(data[12]));
+
+        for (int x = 0; x < HRM_SAMPLE_COUNT; x++)
+            spModel.getHRMSample().add(Int16(data[5 + (x * 2) + 8], data[6 + (x * 2) + 8]));
     }
 
     private static int Int8(byte data) {

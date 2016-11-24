@@ -167,6 +167,9 @@ public final class SensorPuckModel implements Parcelable {
     }
 
     public List<Integer> getHRMSample() {
+        if (mHRMSample == null) {
+            mHRMSample = new ArrayList<>();
+        }
         return mHRMSample;
     }
 
