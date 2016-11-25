@@ -81,8 +81,9 @@ final class SensorPuckParser {
         spModel.setHRMState(Int8(data[11]));
         spModel.setHRMRate(Int8(data[12]));
 
-        for (int x = 0; x < HRM_SAMPLE_COUNT; x++)
+        for (int x = 0; x < HRM_SAMPLE_COUNT; x++) {
             spModel.getHRMSample().add(Int16(data[5 + (x * 2) + 8], data[6 + (x * 2) + 8]));
+        }
     }
 
     private static int Int8(byte data) {

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:ap="http://schemas.android.com/apk/res-auto"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@android:color/background_light"
@@ -123,5 +124,17 @@
         android:layout_margin="@dimen/fab_margin"
         android:textColor="@android:color/darker_gray"
         android:textSize="26sp"/>
+
+    <com.androidplot.xy.XYPlot
+        android:id="@+id/plot"
+        style="@style/APDefacto.Dark"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/sp_details_battery_label"
+        android:layout_margin="@dimen/fab_margin"
+        ap.graphWidget.marginBottom="0dp"
+        ap.graphWidget.marginLeft="0dp"
+        ap.graphWidget.marginRight="0dp"
+        ap.graphWidget.marginTop="0dp"/>
 
 </RelativeLayout>

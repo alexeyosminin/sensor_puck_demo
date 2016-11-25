@@ -42,4 +42,7 @@ dependencies {
     //CardView
     compile deps.cardview
     compile deps.recycler
+
+    //AndroidPlot
+    compile deps.androidplot
 }
