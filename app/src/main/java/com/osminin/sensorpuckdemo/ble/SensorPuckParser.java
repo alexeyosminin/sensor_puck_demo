@@ -6,6 +6,8 @@ import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static android.R.attr.x;
 
@@ -15,19 +17,34 @@ import static android.R.attr.x;
 
 final class SensorPuckParser {
     /* Sensor Data types */
-    public static final int SD_MODE = 0;
-    public static final int SD_SEQUENCE = 1;
-    public static final int SD_HUMIDITY = 2;
-    public static final int SD_TEMPERATURE = 3;
-    public static final int SD_AMB_LIGHT = 4;
-    public static final int SD_UV_LIGHT = 5;
-    public static final int SD_BATTERY = 6;
-    public static final int SD_HRM_STATE = 16;
-    public static final int SD_HRM_RATE = 17;
-    public static final int SD_HRM_SAMPLE = 18;
-    public static final int ENVIRONMENTAL_MODE = 0;
-    public static final int BIOMETRIC_MODE = 1;
-    public static final int HRM_SAMPLE_COUNT = 5;
+    private static final int SD_MODE = 0;
+    private static final int SD_SEQUENCE = 1;
+    private static final int SD_HUMIDITY = 2;
+    private static final int SD_TEMPERATURE = 3;
+    private static final int SD_AMB_LIGHT = 4;
+    private static final int SD_UV_LIGHT = 5;
+    private static final int SD_BATTERY = 6;
+    private static final int SD_HRM_STATE = 16;
+    private static final int SD_HRM_RATE = 17;
+    private static final int SD_HRM_SAMPLE = 18;
+    private static final int ENVIRONMENTAL_MODE = 0;
+    private static final int BIOMETRIC_MODE = 1;
+    private static final int HRM_SAMPLE_COUNT = 5;
+
+    //min and max values for fake data
+    private static final int HRM_RATE_MAX = 120;
+    private static final int HRM_RATE_MIN = 40;
+    private static final int SIGNAL_STRENGTH_MAX = -30;
+    private static final int SIGNAL_STRENGTH_MIN = -70;
+    private static final int TEMPERATURE_MAX = 30;
+    private static final int TEMPERATURE_MIN = 20;
+    private static final int HUMIDITY_MAX = 30;
+    private static final int HUMIDITY_MIN = 20;
+    private static final float BATTERY_MAX = 3.1f;
+    private static final float BATTERY_MIN = 2.5f;
+    private static final int LIGHT_MAX = 1000;
+    private static final int LIGHT_MIN = 700;
+
     private static final String TAG = SensorPuckParser.class.getSimpleName();
 
     static boolean isSensorPuckRecord(ScanResult result) {
@@ -63,6 +80,19 @@ final class SensorPuckParser {
             }
         }
         return spModels;
+    }
+
+    static SensorPuckModel generateRandomModel(int seed, List<String> address) {
+        SensorPuckModel spModel = new SensorPuckModel();
+        spModel.setAddress(address.get(seed));
+        spModel.setName(defaultName(spModel.getAddress()));
+        Random rnd = new Random(System.currentTimeMillis() / (seed + 1));
+        spModel.setTemperature(rnd.nextFloat() * (TEMPERATURE_MAX - TEMPERATURE_MIN) + TEMPERATURE_MIN);
+        spModel.setHumidity(rnd.nextFloat() * (HUMIDITY_MAX - HUMIDITY_MIN) + HUMIDITY_MIN);
+        spModel.setBattery(rnd.nextFloat() * (BATTERY_MAX - BATTERY_MIN) + BATTERY_MIN);
+        spModel.setAmbientLight(rnd.nextInt(LIGHT_MAX - LIGHT_MIN) + LIGHT_MIN);
+        spModel.setSignalStrength(rnd.nextInt(SIGNAL_STRENGTH_MAX - SIGNAL_STRENGTH_MIN) + SIGNAL_STRENGTH_MIN);
+        return spModel;
     }
 
     private static void parseEnvironmental(SensorPuckModel spModel, byte[] data) {

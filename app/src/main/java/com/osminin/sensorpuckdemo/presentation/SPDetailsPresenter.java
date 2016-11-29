@@ -3,6 +3,7 @@ package com.osminin.sensorpuckdemo.presentation;
 import android.os.Handler;
 
 import com.osminin.sensorpuckdemo.ble.BleSPScanner;
+import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import javax.inject.Inject;
@@ -17,10 +18,10 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  * Created by osminin on 09.11.2016.
  */
 
-public final class SPDetailsPresenter implements Presenter<SPDetailsView>, Observer<SensorPuckModel> {
+public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, Observer<SensorPuckModel> {
 
     @Inject
-    BleSPScanner mScanner;
+    SPScannerInterface mScanner;
     private SPDetailsView mView;
     private SensorPuckModel mModel;
     private Subscription mSubscription;

@@ -10,7 +10,7 @@ import java.util.List;
  * Created by osminin on 09.11.2016.
  */
 
-public final class SensorPuckModel implements Parcelable {
+public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckModel> {
 
     @SuppressWarnings("unused")
     public static final Parcelable.Creator<SensorPuckModel> CREATOR = new Parcelable.Creator<SensorPuckModel>() {
@@ -301,5 +301,29 @@ public final class SensorPuckModel implements Parcelable {
         dest.writeInt(mLostCount);
         dest.writeInt(mIdleCount);
         dest.writeInt(mSignalStrength);
+    }
+
+    @Override
+    public int compareTo(SensorPuckModel model) {
+        return mAddress.compareTo(model.getAddress());
+    }
+
+    @Override
+    public String toString() {
+        return "SensorPuckModel{" +
+                "mHRMRate=" + mHRMRate +
+                ", mHRMState=" + mHRMState +
+                ", mSignalStrength=" + mSignalStrength +
+                ", mHRMSample=" + mHRMSample +
+                ", mBattery=" + mBattery +
+                ", mUVIndex=" + mUVIndex +
+                ", mAmbientLight=" + mAmbientLight +
+                ", mTemperature=" + mTemperature +
+                ", mHumidity=" + mHumidity +
+                ", mSequence=" + mSequence +
+                ", mMeasurementMode=" + mMeasurementMode +
+                ", mName='" + mName + '\'' +
+                ", mAddress='" + mAddress + '\'' +
+                '}';
     }
 }

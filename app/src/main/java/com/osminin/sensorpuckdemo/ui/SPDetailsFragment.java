@@ -202,9 +202,6 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
         mPlot.getGraph().getRangeCursorPaint().setColor(Color.WHITE);
         mPlot.setBorderStyle(Plot.BorderStyle.NONE, 0f, 0f);
         mPlot.getGraph().getGridBackgroundPaint().setColor(Color.WHITE);
-        mPlot.setPlotMargins(0, 0, 0, 0);
-        mPlot.getDomainTitle().setVisible(false);
-        mPlot.getRangeTitle().getLabelPaint().setColor(Color.RED);
     }
 
     private void updateHRMPlot() {

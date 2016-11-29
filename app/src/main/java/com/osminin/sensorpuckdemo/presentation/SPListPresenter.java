@@ -3,15 +3,14 @@ package com.osminin.sensorpuckdemo.presentation;
 import android.os.Handler;
 import android.util.Log;
 
-import com.osminin.sensorpuckdemo.ble.BleSPScanner;
+import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Set;
+import java.util.TreeMap;
 
 import javax.inject.Inject;
 
@@ -24,17 +23,17 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenter implements Presenter<SPListView>, Observer<SensorPuckModel> {
+public class SPListPresenter implements BasePresenter<SPListView>, Observer<SensorPuckModel> {
     private static final String TAG = SPListPresenter.class.getSimpleName();
     @Inject
-    BleSPScanner mScanner;
+    SPScannerInterface mScanner;
     private SPListView mView;
     private Map<SensorPuckModel, Handler> mFoundSP;
     private Subscription mSubscription;
 
     @Inject
     SPListPresenter() {
-        mFoundSP = new HashMap<>();
+        mFoundSP = new TreeMap<>();
     }
 
     @Override
@@ -67,12 +66,12 @@ public class SPListPresenter implements Presenter<SPListView>, Observer<SensorPu
 
     @Override
     public void onNext(final SensorPuckModel sensorPuckModel) {
-        Log.d(TAG, "onNext()");
+        //Log.d(TAG, "onNext(): " + sensorPuckModel);
         if (mFoundSP.containsKey(sensorPuckModel)) {
             Handler handler = mFoundSP.remove(sensorPuckModel);
             handler.removeCallbacksAndMessages(null);
         }
-        Handler selfRemoveHandler = new Handler();
+        Handler selfRemoveHandler = new Handler(mView.getContext().getMainLooper());
         selfRemoveHandler.postDelayed(new Runnable() {
             @Override
             public void run() {

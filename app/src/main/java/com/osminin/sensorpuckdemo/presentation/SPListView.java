@@ -8,7 +8,7 @@ import java.util.List;
  * Created by osminin on 08.11.2016.
  */
 
-public interface SPListView {
+public interface SPListView extends BaseView {
 
     void updateDeviceList(List<SensorPuckModel> list);
 

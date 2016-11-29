@@ -65,7 +65,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        ButterKnife.setDebug(true);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
         mPresenter.setView(this);
@@ -166,6 +165,11 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
                     mOnClickSubject.onNext(model);
                 }
             });
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return mDevices.get(position).hashCode();
         }
 
         @Override

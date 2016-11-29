@@ -1,5 +1,5 @@
 package com.osminin.sensorpuckdemo.presentation;
 
-public interface Presenter<T> {
+public interface BasePresenter<T> {
   void setView(T view);
 }

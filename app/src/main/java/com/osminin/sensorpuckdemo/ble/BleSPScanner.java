@@ -24,7 +24,7 @@ import rx.subjects.PublishSubject;
  * Created by osminin on 16.11.2016.
  */
 
-public final class BleSPScanner {
+public final class BleSPScanner implements SPScannerInterface {
     private PublishSubject<SensorPuckModel> mSubject = PublishSubject.create();
     private ScanCallback mScanCallback;
     private BluetoothLeScanner mScanner;
@@ -62,6 +62,7 @@ public final class BleSPScanner {
         };
     }
 
+    @Override
     public Subscription subscribe(Observer<? super SensorPuckModel> observer) {
         return mSubject
                 .asObservable()
@@ -78,6 +79,7 @@ public final class BleSPScanner {
                 .subscribe(observer);
     }
 
+    @Override
     public Subscription subscribe(Observer<? super SensorPuckModel> observer,
                                   Func1<? super SensorPuckModel, Boolean> predicate) {
         return mSubject
