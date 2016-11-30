@@ -13,4 +13,10 @@ public interface SPListView extends BaseView {
     void updateDeviceList(List<SensorPuckModel> list);
 
     void showDetailsFragment(SensorPuckModel model);
+
+    void updateItemInserted(int position);
+
+    void updateItemRemoved(int position);
+
+    void updateItemChanged(int position);
 }

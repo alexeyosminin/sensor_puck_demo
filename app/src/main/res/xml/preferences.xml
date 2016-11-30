@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference
+        android:key="@string/settings_mode_key"
+        android:title="@string/settings_mode_label"
+        android:entries="@array/mode_types"
+        android:entryValues="@array/mode_types"/>
+
+</PreferenceScreen>

@@ -37,9 +37,9 @@ public final class FakeSPScanner implements SPScannerInterface {
     @Inject
     @Singleton
     public FakeSPScanner() {
-        mSPCount = 100; // default
+        mSPCount = 10; // default
         //all devices should be updated during SP_DISCOVERY_TIMEOUT
-        mIntervalProducer = Observable.interval(SP_DISCOVERY_TIMEOUT / mSPCount, TimeUnit.MILLISECONDS);
+        mIntervalProducer = Observable.interval(SP_DISCOVERY_TIMEOUT / (mSPCount + 1), TimeUnit.MILLISECONDS);
         mMacAddress = new ArrayList<>(mSPCount);
         for (int i = 0; i < mSPCount; ++i) {
             mMacAddress.add(randomMACAddress(i));

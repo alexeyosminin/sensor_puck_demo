@@ -7,9 +7,6 @@ import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-
-import static android.R.attr.x;
 
 /**
  * Created by osminin on 17.11.2016.
@@ -17,7 +14,8 @@ import static android.R.attr.x;
 
 final class SensorPuckParser {
     /* Sensor Data types */
-    private static final int SD_MODE = 0;
+    private static final int ADVERTISEMENT_STYLE_INDEX = 5;
+    private static final int MODE_INDEX = 7;
     private static final int SD_SEQUENCE = 1;
     private static final int SD_HUMIDITY = 2;
     private static final int SD_TEMPERATURE = 3;
@@ -30,6 +28,9 @@ final class SensorPuckParser {
     private static final int ENVIRONMENTAL_MODE = 0;
     private static final int BIOMETRIC_MODE = 1;
     private static final int HRM_SAMPLE_COUNT = 5;
+
+    private static final int ADVERTISEMENT_OLD = 0x34;
+    private static final int ADVERTISEMENT_NEW = 0x35;
 
     //min and max values for fake data
     private static final int HRM_RATE_MAX = 120;
@@ -49,7 +50,10 @@ final class SensorPuckParser {
 
     static boolean isSensorPuckRecord(ScanResult result) {
         byte[] data = result.getScanRecord().getBytes();
-        return (data[4] == (-1)) && ((data[5] == 0x34) || (data[5] == 0x35)) && (data[6] == 0x12);
+        return (data[4] == (-1))
+                && ((data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_OLD)
+                || (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_NEW))
+                && (data[6] == 0x12);
     }
 
     static SensorPuckModel parse(ScanResult result) {
@@ -58,14 +62,16 @@ final class SensorPuckParser {
         spModel.setAddress(result.getDevice().getAddress());
         spModel.setName(defaultName(spModel.getAddress()));
         spModel.setSignalStrength(result.getRssi());
-        if (data[5] == 0x34) {
+        spModel.setTimestamp(System.currentTimeMillis());
+        if (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_OLD) {
             // If its an old style advertisement
-        } else if (data[5] == 0x35) {
+            //TODO:
+        } else if (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_NEW) {
             // If its a new style advertisement
-            if (data[7] == ENVIRONMENTAL_MODE) {
+            if (data[MODE_INDEX] == ENVIRONMENTAL_MODE) {
                 parseEnvironmental(spModel, data);
             }
-            if (data[7] == BIOMETRIC_MODE) {
+            if (data[MODE_INDEX] == BIOMETRIC_MODE) {
                 parseBiometric(spModel, data);
             }
         }
@@ -92,6 +98,7 @@ final class SensorPuckParser {
         spModel.setBattery(rnd.nextFloat() * (BATTERY_MAX - BATTERY_MIN) + BATTERY_MIN);
         spModel.setAmbientLight(rnd.nextInt(LIGHT_MAX - LIGHT_MIN) + LIGHT_MIN);
         spModel.setSignalStrength(rnd.nextInt(SIGNAL_STRENGTH_MAX - SIGNAL_STRENGTH_MIN) + SIGNAL_STRENGTH_MIN);
+        spModel.setTimestamp(System.currentTimeMillis());
         return spModel;
     }
 

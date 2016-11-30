@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="mode_types">
+        <item>@string/settings_mode_fake</item>
+        <item>@string/settings_mode_real</item>
+    </string-array>
+</resources>

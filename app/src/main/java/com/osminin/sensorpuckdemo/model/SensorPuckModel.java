@@ -45,6 +45,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
     private int mLostCount;
     private int mIdleCount;
     private int mSignalStrength;
+    private long mTimestamp;
 
     public SensorPuckModel() {
     }
@@ -76,6 +77,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         mLostCount = in.readInt();
         mIdleCount = in.readInt();
         mSignalStrength = in.readInt();
+        mTimestamp = in.readLong();
     }
 
     public String getAddress() {
@@ -249,6 +251,14 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         mSignalStrength = signalStrength;
     }
 
+    public long getTimestamp() {
+        return mTimestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        mTimestamp = timestamp;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -301,6 +311,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         dest.writeInt(mLostCount);
         dest.writeInt(mIdleCount);
         dest.writeInt(mSignalStrength);
+        dest.writeLong(mTimestamp);
     }
 
     @Override

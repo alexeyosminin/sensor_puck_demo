@@ -2,7 +2,6 @@ package com.osminin.sensorpuckdemo.presentation;
 
 import android.os.Handler;
 
-import com.osminin.sensorpuckdemo.ble.BleSPScanner;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
@@ -39,7 +38,7 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
 
     public void setModel(SensorPuckModel model) {
         mModel = model;
-        mTimeoutHandler.postDelayed(mDestroyViewTask, SP_DISCOVERY_TIMEOUT);
+        mTimeoutHandler.postDelayed(mTimeoutTask, SP_DISCOVERY_TIMEOUT);
     }
 
     public void startReceivingUpdates() {
@@ -70,7 +69,7 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
     @Override
     public void onNext(SensorPuckModel sensorPuckModel) {
         mTimeoutHandler.removeCallbacksAndMessages(null);
-        mTimeoutHandler.postDelayed(mDestroyViewTask, SP_DISCOVERY_TIMEOUT);
+        mTimeoutHandler.postDelayed(mTimeoutTask, SP_DISCOVERY_TIMEOUT);
         if (sensorPuckModel.getHRMSample().size() > 0) {
             sensorPuckModel.setHRMPrevSample(sensorPuckModel.getHRMSample().get(sensorPuckModel.getHRMSample().size() - 1));
         }
@@ -78,7 +77,7 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
         mView.update(sensorPuckModel);
     }
 
-    private Runnable mDestroyViewTask = new Runnable() {
+    private Runnable mTimeoutTask = new Runnable() {
         @Override
         public void run() {
             if (mView != null) {

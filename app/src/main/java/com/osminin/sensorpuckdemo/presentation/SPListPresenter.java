@@ -6,11 +6,9 @@ import android.util.Log;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.inject.Inject;
 
@@ -28,12 +26,25 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
     @Inject
     SPScannerInterface mScanner;
     private SPListView mView;
-    private Map<SensorPuckModel, Handler> mFoundSP;
+    private Handler mTimeoutHandler;
     private Subscription mSubscription;
+
+    private List<SensorPuckModel> mSpList;
+    private Runnable mTimeoutTask = new Runnable() {
+        @Override
+        public void run() {
+            if (mView != null) {
+                //remove last element by timeout
+                mSpList.remove(0);
+                mView.updateItemRemoved(0);
+            }
+        }
+    };
 
     @Inject
     SPListPresenter() {
-        mFoundSP = new TreeMap<>();
+        mTimeoutHandler = new Handler();
+        mSpList = new LinkedList<>();
     }
 
     @Override
@@ -47,7 +58,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
 
     public void stopScan() {
         mSubscription.unsubscribe();
-        freeDeviceMap();
+        mTimeoutHandler.removeCallbacks(mTimeoutTask);
     }
 
     public void onDeviceSelected(SensorPuckModel model) {
@@ -66,31 +77,37 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
 
     @Override
     public void onNext(final SensorPuckModel sensorPuckModel) {
-        //Log.d(TAG, "onNext(): " + sensorPuckModel);
-        if (mFoundSP.containsKey(sensorPuckModel)) {
-            Handler handler = mFoundSP.remove(sensorPuckModel);
-            handler.removeCallbacksAndMessages(null);
-        }
-        Handler selfRemoveHandler = new Handler(mView.getContext().getMainLooper());
-        selfRemoveHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mFoundSP.remove(sensorPuckModel);
-                if (mView != null) {
-                    mView.updateDeviceList(new ArrayList<>(mFoundSP.keySet()));
+        Log.d(TAG, "onNext item received : " + sensorPuckModel.getAddress());
+        mTimeoutHandler.removeCallbacks(mTimeoutTask);
+        if (mSpList.size() == 0) {
+            mSpList.add(sensorPuckModel);
+            mView.updateDeviceList(mSpList);
+        } else {
+            Iterator<SensorPuckModel> it = mSpList.iterator();
+            int i = 0;
+            int positionToReplace = -1;
+            while (it.hasNext()) {
+                long currentTime = System.currentTimeMillis();
+                SensorPuckModel cur = it.next();
+                if (cur.equals(sensorPuckModel)) {
+                    positionToReplace = i;
+                }
+                if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
+                    mView.updateItemRemoved(i);
+                    it.remove();
+                } else {
+                    ++i;
                 }
             }
-        }, SP_DISCOVERY_TIMEOUT);
-        mFoundSP.put(sensorPuckModel, selfRemoveHandler);
-
-        mView.updateDeviceList(new ArrayList<>(mFoundSP.keySet()));
-    }
-
-    private void freeDeviceMap() {
-        Iterator<Map.Entry<SensorPuckModel, Handler>> it = mFoundSP.entrySet().iterator();
-        while (it.hasNext()) {
-            it.next().getValue().removeCallbacksAndMessages(null);
-            it.remove();
+            if (positionToReplace > -1) {
+                mSpList.remove(positionToReplace);
+                mSpList.add(positionToReplace, sensorPuckModel);
+                mView.updateItemChanged(positionToReplace);
+            } else if (!mSpList.contains(sensorPuckModel)) {
+                mSpList.add(sensorPuckModel);
+                mView.updateItemInserted(mSpList.size() - 1);
+            }
         }
+        mTimeoutHandler.postDelayed(mTimeoutTask, SP_DISCOVERY_TIMEOUT);
     }
 }

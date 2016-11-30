@@ -20,4 +20,11 @@
     <string name="hrm_state_reposition">Re-position Finger</string>
     <string name="hrm_state_error">Error</string>
 
+    <string name="nav_menu_settings">Settings</string>
+
+    <string name="settings_mode_label">Select mode</string>
+    <string name="settings_mode_fake">Fake data</string>
+    <string name="settings_mode_real">Real data</string>
+    <string name="settings_mode_key">settings_mode_key</string>
+
 </resources>

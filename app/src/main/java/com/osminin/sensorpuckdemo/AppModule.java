@@ -32,14 +32,13 @@ public class AppModule {
     @Singleton
     public SPScannerInterface provideSPScanner() {
         //TODO: factory
-        int mode = 1;
-        switch (mode) {
-            case 0:
-                return new BleSPScanner((BluetoothManager) app.getSystemService(Context.BLUETOOTH_SERVICE));
-            case 1:
-                return new FakeSPScanner();
+        String realMode = app.getString(R.string.settings_mode_real);
+        String mode = provideSharedPreferences().getString(app.getString(R.string.settings_mode_key), realMode);
+        if (realMode.equals(mode)) {
+            return new BleSPScanner((BluetoothManager) app.getSystemService(Context.BLUETOOTH_SERVICE));
+        } else {
+            return new FakeSPScanner();
         }
-        return null;
     }
 
     @Provides

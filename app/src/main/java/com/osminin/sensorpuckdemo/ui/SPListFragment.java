@@ -113,6 +113,21 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         transaction.commit();
     }
 
+    @Override
+    public void updateItemInserted(int position) {
+        mAdapter.notifyItemInserted(position);
+    }
+
+    @Override
+    public void updateItemRemoved(int position) {
+        mAdapter.notifyItemRemoved(position);
+    }
+
+    @Override
+    public void updateItemChanged(int position) {
+        mAdapter.notifyItemChanged(position);
+    }
+
     private void initList() {
         mAdapter = new SPAdapter();
         RecyclerView.LayoutManager layoutManager;
