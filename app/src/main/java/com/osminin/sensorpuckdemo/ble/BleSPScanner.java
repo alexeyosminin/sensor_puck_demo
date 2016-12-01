@@ -5,7 +5,9 @@ import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
+import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.List;
@@ -25,6 +27,7 @@ import rx.subjects.PublishSubject;
  */
 
 public final class BleSPScanner implements SPScannerInterface {
+    private static final String TAG = BleSPScanner.class.getSimpleName();
     private PublishSubject<SensorPuckModel> mSubject = PublishSubject.create();
     private ScanCallback mScanCallback;
     private BluetoothLeScanner mScanner;
@@ -33,11 +36,13 @@ public final class BleSPScanner implements SPScannerInterface {
     @Inject
     @Singleton
     public BleSPScanner(final BluetoothManager bluetoothManager) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "BleSPScanner(): ");
         BluetoothAdapter adapter = bluetoothManager.getAdapter();
         mScanner = adapter.getBluetoothLeScanner();
         mScanCallback = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
+                FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: " + result.getDevice().getAddress());
                 if (SensorPuckParser.isSensorPuckRecord(result)) {
                     SensorPuckModel spModel = SensorPuckParser.parse(result);
                     mSubject.onNext(spModel);
@@ -47,6 +52,7 @@ public final class BleSPScanner implements SPScannerInterface {
 
             @Override
             public void onBatchScanResults(List<ScanResult> results) {
+                FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: ");
                 List<SensorPuckModel> spModels = SensorPuckParser.parseBatchResult(results);
                 for (SensorPuckModel spModel : spModels) {
                     mSubject.onNext(spModel);
@@ -56,6 +62,7 @@ public final class BleSPScanner implements SPScannerInterface {
 
             @Override
             public void onScanFailed(int errorCode) {
+                FirebaseCrash.logcat(Log.ERROR, TAG, "onScanFailed: " + errorCode);
                 mSubject.onError(new Exception("error: " + errorCode));
                 stopScanIfNoObservers();
             }
@@ -64,6 +71,7 @@ public final class BleSPScanner implements SPScannerInterface {
 
     @Override
     public Subscription subscribe(Observer<? super SensorPuckModel> observer) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "subscribe: " + observer.getClass().getName());
         return mSubject
                 .asObservable()
                 .doOnSubscribe(new Action0() {
@@ -82,6 +90,7 @@ public final class BleSPScanner implements SPScannerInterface {
     @Override
     public Subscription subscribe(Observer<? super SensorPuckModel> observer,
                                   Func1<? super SensorPuckModel, Boolean> predicate) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "subscribe: " + observer.getClass().getName());
         return mSubject
                 .asObservable()
                 .doOnSubscribe(new Action0() {
@@ -102,6 +111,7 @@ public final class BleSPScanner implements SPScannerInterface {
         if (!mSubject.hasObservers()) {
             mScanner.stopScan(mScanCallback);
             isRunning = false;
+            FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: ");
         }
     }
 }

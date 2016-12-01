@@ -1,5 +1,8 @@
 package com.osminin.sensorpuckdemo.ble;
 
+import android.util.Log;
+
+import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.ArrayList;
@@ -24,6 +27,8 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  */
 
 public final class FakeSPScanner implements SPScannerInterface {
+    private static final String TAG = FakeSPScanner.class.getSimpleName();
+    private static final long BACKPRESSURE_BUFFER_CAPACITY = 1000;
     private Observable<Long> mIntervalProducer;
     private int mSPCount;
     private List<String> mMacAddress;
@@ -36,8 +41,9 @@ public final class FakeSPScanner implements SPScannerInterface {
 
     @Inject
     @Singleton
-    public FakeSPScanner() {
-        mSPCount = 10; // default
+    public FakeSPScanner(int fakeSPCount) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "FakeSPScanner()");
+        mSPCount = fakeSPCount;
         //all devices should be updated during SP_DISCOVERY_TIMEOUT
         mIntervalProducer = Observable.interval(SP_DISCOVERY_TIMEOUT / (mSPCount + 1), TimeUnit.MILLISECONDS);
         mMacAddress = new ArrayList<>(mSPCount);
@@ -48,8 +54,9 @@ public final class FakeSPScanner implements SPScannerInterface {
 
     @Override
     public Subscription subscribe(Observer<? super SensorPuckModel> observer) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "subscribe: " + observer.getClass().getName());
         return mIntervalProducer
-                .onBackpressureBuffer(1000)
+                .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .subscribeOn(Schedulers.immediate())
                 .map(mDeviceMapper)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -59,8 +66,9 @@ public final class FakeSPScanner implements SPScannerInterface {
     @Override
     public Subscription subscribe(Observer<? super SensorPuckModel> observer,
                                   Func1<? super SensorPuckModel, Boolean> predicate) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "subscribe: " + observer.getClass().getName());
         return mIntervalProducer
-                .onBackpressureBuffer(1000)
+                .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .subscribeOn(Schedulers.immediate())
                 .map(mDeviceMapper)
                 .filter(predicate)
@@ -84,7 +92,8 @@ public final class FakeSPScanner implements SPScannerInterface {
             sb.append(String.format("%02x", b));
         }
 
-
-        return sb.toString().toUpperCase();
+        String result = sb.toString().toUpperCase();
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "randomMACAddress: " + result);
+        return result;
     }
 }

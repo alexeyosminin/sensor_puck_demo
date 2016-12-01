@@ -45,4 +45,10 @@ dependencies {
 
     //AndroidPlot
     compile deps.androidplot
+
+    //Firebase
+    compile deps.firebasecore
+    compile deps.firebasecrash
 }
+
+apply plugin: 'com.google.gms.google-services'

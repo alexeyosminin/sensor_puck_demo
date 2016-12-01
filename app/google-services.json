@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1065090509272",
+    "firebase_url": "https://sensorpuck-demo.firebaseio.com",
+    "project_id": "sensorpuck-demo",
+    "storage_bucket": "sensorpuck-demo.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1065090509272:android:26ea304cea0103a9",
+        "android_client_info": {
+          "package_name": "com.osminin.sensorpuckdemo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1065090509272-bv72jt5856hgv829v1s7vbjjs5poqqdd.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZ2T8_40KREWyNMFFInvOJOhKl2gDBMlw"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

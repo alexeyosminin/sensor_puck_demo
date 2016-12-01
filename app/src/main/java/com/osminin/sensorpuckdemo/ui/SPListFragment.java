@@ -174,6 +174,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
             final SensorPuckModel model = mDevices.get(position);
             ((SPViewHolder) holder).mCardName.setText(model.getName());
             ((SPViewHolder) holder).mSignal.setText(model.getSignalStrength() + " dBm");
+            ((SPViewHolder) holder).mAddress.setText(model.getAddress());
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -202,6 +203,9 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
             @BindView(R.id.sp_card_signal)
             TextView mSignal;
+
+            @BindView(R.id.sp_card_address)
+            TextView mAddress;
 
             public SPViewHolder(View itemView) {
                 super(itemView);

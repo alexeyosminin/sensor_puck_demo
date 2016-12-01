@@ -1,7 +1,9 @@
 package com.osminin.sensorpuckdemo.ble;
 
 import android.bluetooth.le.ScanResult;
+import android.util.Log;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.ArrayList;
@@ -50,10 +52,13 @@ final class SensorPuckParser {
 
     static boolean isSensorPuckRecord(ScanResult result) {
         byte[] data = result.getScanRecord().getBytes();
-        return (data[4] == (-1))
+        boolean res = (data[4] == (-1))
                 && ((data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_OLD)
                 || (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_NEW))
                 && (data[6] == 0x12);
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "isSensorPuckRecord: "
+                + result.getDevice().getAddress() + " - " + res);
+        return res;
     }
 
     static SensorPuckModel parse(ScanResult result) {
@@ -75,6 +80,7 @@ final class SensorPuckParser {
                 parseBiometric(spModel, data);
             }
         }
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "parsed: " + spModel.getName());
         return spModel;
     }
 
@@ -99,10 +105,12 @@ final class SensorPuckParser {
         spModel.setAmbientLight(rnd.nextInt(LIGHT_MAX - LIGHT_MIN) + LIGHT_MIN);
         spModel.setSignalStrength(rnd.nextInt(SIGNAL_STRENGTH_MAX - SIGNAL_STRENGTH_MIN) + SIGNAL_STRENGTH_MIN);
         spModel.setTimestamp(System.currentTimeMillis());
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "generateRandomModel: " + spModel.getName());
         return spModel;
     }
 
     private static void parseEnvironmental(SensorPuckModel spModel, byte[] data) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "parseEnvironmental: " + spModel.getName());
         spModel.setMeasurementMode(ENVIRONMENTAL_MODE);
         spModel.setSequence(Int8(data[5 + 3]));
         spModel.setHumidity(((float) Int16(data[8 + 3], data[9 + 3])) / 10.0f);
@@ -113,6 +121,7 @@ final class SensorPuckParser {
     }
 
     private static void parseBiometric(SensorPuckModel spModel, byte[] data) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "parseBiometric: " + spModel.getName());
         spModel.setMeasurementMode(BIOMETRIC_MODE);
         spModel.setSequence(Int8(data[8]));
         spModel.setHRMState(Int8(data[11]));
