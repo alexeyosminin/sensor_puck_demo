@@ -134,12 +134,11 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
     @Override
     public void update(SensorPuckModel model) {
         mModel = model;
-        mTemperature.setText(Float.toString(model.getTemperature()));
-        mLight.setText(Integer.toString(model.getAmbientLight()));
+        mTemperature.setText(String.format("%.2f",Float.toString(model.getTemperature())));
+        mLight.setText(String.format("%.2f",Integer.toString(model.getAmbientLight())));
         mUv.setText(Integer.toString(model.getUVIndex()));
-        mHumidity.setText(Float.toString(model.getHumidity()));
-        mBattery.setText(Float.toString(model.getBattery()));
-        updateBatteryImage();
+        mHumidity.setText(String.format("%.2f",Float.toString(model.getHumidity())));
+        mBattery.setText(String.format("%.2f",Float.toString(model.getBattery())));
         String hrmText = null;
         switch (model.getHRMState()) {
             case HRM_STATE_IDLE:
