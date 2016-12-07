@@ -36,7 +36,7 @@ public class AppModule {
         if (realMode.equals(mode)) {
             return new BleSPScanner((BluetoothManager) app.getSystemService(Context.BLUETOOTH_SERVICE));
         } else {
-            Integer fakeSPCount = 10; //TODO: replace default
+            Integer fakeSPCount = 100; //TODO: replace default
             return new FakeSPScanner(fakeSPCount);
         }
     }

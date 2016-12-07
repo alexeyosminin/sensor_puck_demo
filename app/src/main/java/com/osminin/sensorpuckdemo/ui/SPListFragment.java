@@ -12,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.osminin.sensorpuckdemo.App;
@@ -22,6 +23,7 @@ import com.osminin.sensorpuckdemo.presentation.SPListView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -137,9 +139,10 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
             layoutManager = new LinearLayoutManager(getContext());
         }
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter.getPositionClicks().
-                observeOn(AndroidSchedulers.mainThread()).
-                subscribe(this);
+        mAdapter.getPositionClicks()
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
@@ -173,8 +176,27 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final SensorPuckModel model = mDevices.get(position);
             ((SPViewHolder) holder).mCardName.setText(model.getName());
-            ((SPViewHolder) holder).mSignal.setText(model.getSignalStrength() + " dBm");
+            ((SPViewHolder) holder).mSignal.setText(model.getRssi() + " dBm");
             ((SPViewHolder) holder).mAddress.setText(model.getAddress());
+            int rssiImageId = 0;
+            switch (model.getSignalStrength()) {
+                case VERY_LOW:
+                    rssiImageId = R.drawable.ic_signal_cellular_0_bar_black_24dp;
+                    break;
+                case LOW:
+                    rssiImageId = R.drawable.ic_signal_cellular_1_bar_black_24dp;
+                    break;
+                case MEDIUM:
+                    rssiImageId = R.drawable.ic_signal_cellular_2_bar_black_24dp;
+                    break;
+                case HIGH:
+                    rssiImageId = R.drawable.ic_signal_cellular_3_bar_black_24dp;
+                    break;
+                case VERY_HIGH:
+                    rssiImageId = R.drawable.ic_signal_cellular_4_bar_black_24dp;
+                    break;
+            }
+            ((SPViewHolder) holder).mSignalImage.setImageResource(rssiImageId);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -200,12 +222,12 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         class SPViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.sp_card_name)
             TextView mCardName;
-
             @BindView(R.id.sp_card_signal)
             TextView mSignal;
-
             @BindView(R.id.sp_card_address)
             TextView mAddress;
+            @BindView(R.id.sp_card_rssi)
+            ImageView mSignalImage;
 
             public SPViewHolder(View itemView) {
                 super(itemView);

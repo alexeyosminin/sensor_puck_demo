@@ -15,24 +15,25 @@ import java.util.Random;
  */
 
 final class SensorPuckParser {
-    /* Sensor Data types */
-    private static final int ADVERTISEMENT_STYLE_INDEX = 5;
-    private static final int MODE_INDEX = 7;
-    private static final int SD_SEQUENCE = 1;
-    private static final int SD_HUMIDITY = 2;
-    private static final int SD_TEMPERATURE = 3;
-    private static final int SD_AMB_LIGHT = 4;
-    private static final int SD_UV_LIGHT = 5;
-    private static final int SD_BATTERY = 6;
-    private static final int SD_HRM_STATE = 16;
-    private static final int SD_HRM_RATE = 17;
-    private static final int SD_HRM_SAMPLE = 18;
     private static final int ENVIRONMENTAL_MODE = 0;
     private static final int BIOMETRIC_MODE = 1;
     private static final int HRM_SAMPLE_COUNT = 5;
 
     private static final int ADVERTISEMENT_OLD = 0x34;
     private static final int ADVERTISEMENT_NEW = 0x35;
+
+    private static final int ADVERTISEMENT_STYLE_INDEX = 5;
+    private static final int MODE_INDEX = 7;
+    private static final int SEQUENCE_INDEX = 8;
+    private static final int LIGHT_INDEX_LSB = 10;
+    private static final int HUNIDITY_INDEX_LSB = 11;
+    private static final int HUNIDITY_INDEX_MSB = 12;
+    private static final int TEMPERATURE_INDEX_LSB = 13;
+    private static final int TEMPERATURE_INDEX_MSB = 14;
+    private static final int LIGHT_INDEX_MSB = 16;
+    private static final int UV_INDEX = 17;
+    private static final int BATTERY_INDEX = 18;
+
 
     //min and max values for fake data
     private static final int HRM_RATE_MAX = 120;
@@ -66,7 +67,7 @@ final class SensorPuckParser {
         SensorPuckModel spModel = new SensorPuckModel();
         spModel.setAddress(result.getDevice().getAddress());
         spModel.setName(defaultName(spModel.getAddress()));
-        spModel.setSignalStrength(result.getRssi());
+        spModel.setRssi(result.getRssi());
         spModel.setTimestamp(System.currentTimeMillis());
         if (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_OLD) {
             // If its an old style advertisement
@@ -103,7 +104,7 @@ final class SensorPuckParser {
         spModel.setHumidity(rnd.nextFloat() * (HUMIDITY_MAX - HUMIDITY_MIN) + HUMIDITY_MIN);
         spModel.setBattery(rnd.nextFloat() * (BATTERY_MAX - BATTERY_MIN) + BATTERY_MIN);
         spModel.setAmbientLight(rnd.nextInt(LIGHT_MAX - LIGHT_MIN) + LIGHT_MIN);
-        spModel.setSignalStrength(rnd.nextInt(SIGNAL_STRENGTH_MAX - SIGNAL_STRENGTH_MIN) + SIGNAL_STRENGTH_MIN);
+        spModel.setRssi(rnd.nextInt(SIGNAL_STRENGTH_MAX - SIGNAL_STRENGTH_MIN) + SIGNAL_STRENGTH_MIN);
         spModel.setTimestamp(System.currentTimeMillis());
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "generateRandomModel: " + spModel.getName());
         return spModel;
@@ -112,12 +113,12 @@ final class SensorPuckParser {
     private static void parseEnvironmental(SensorPuckModel spModel, byte[] data) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "parseEnvironmental: " + spModel.getName());
         spModel.setMeasurementMode(ENVIRONMENTAL_MODE);
-        spModel.setSequence(Int8(data[5 + 3]));
-        spModel.setHumidity(((float) Int16(data[8 + 3], data[9 + 3])) / 10.0f);
-        spModel.setTemperature(((float) Int16(data[10 + 3], data[11 + 3])) / 10.0f);
-        spModel.setAmbientLight(Int16(data[7 + 3], data[13 + 3]) * 7);
-        spModel.setUVIndex(Int8(data[14 + 3]));
-        spModel.setBattery(((float) Int8(data[15 + 3])) / 10.0f);
+        spModel.setSequence(Int8(data[SEQUENCE_INDEX]));
+        spModel.setHumidity(((float) Int16(data[HUNIDITY_INDEX_LSB], data[HUNIDITY_INDEX_MSB])) / 10.0f);
+        spModel.setTemperature(((float) Int16(data[TEMPERATURE_INDEX_LSB], data[TEMPERATURE_INDEX_MSB])) / 10.0f);
+        spModel.setAmbientLight(Int16(data[LIGHT_INDEX_LSB], data[LIGHT_INDEX_MSB]) * 7);
+        spModel.setUVIndex(Int8(data[UV_INDEX]));
+        spModel.setBattery(((float) Int8(data[BATTERY_INDEX])) / 10.0f);
     }
 
     private static void parseBiometric(SensorPuckModel spModel, byte[] data) {

@@ -104,6 +104,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
                 if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
                     mView.updateItemRemoved(i);
                     it.remove();
+                    positionToReplace = positionToReplace == i ? -1 : positionToReplace;
                     FirebaseCrash.log("item is removed: " + spModel.getName() +
                             " position: " + i);
                 } else {
