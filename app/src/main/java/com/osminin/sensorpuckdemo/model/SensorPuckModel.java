@@ -44,7 +44,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
     private int mLostAdv;
     private int mLostCount;
     private int mIdleCount;
-    private int mSignalStrength;
+    private int mRssi;
     private long mTimestamp;
 
     public SensorPuckModel() {
@@ -76,7 +76,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         mLostAdv = in.readInt();
         mLostCount = in.readInt();
         mIdleCount = in.readInt();
-        mSignalStrength = in.readInt();
+        mRssi = in.readInt();
         mTimestamp = in.readLong();
     }
 
@@ -243,12 +243,12 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         mIdleCount = idleCount;
     }
 
-    public int getSignalStrength() {
-        return mSignalStrength;
+    public int getRssi() {
+        return mRssi;
     }
 
-    public void setSignalStrength(int signalStrength) {
-        mSignalStrength = signalStrength;
+    public void setRssi(int rssi) {
+        mRssi = rssi;
     }
 
     public long getTimestamp() {
@@ -257,6 +257,38 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
 
     public void setTimestamp(long timestamp) {
         mTimestamp = timestamp;
+    }
+
+    public SignalStrength getSignalStrength() {
+        SignalStrength signalStrength = SignalStrength.MEDIUM;
+        if (getRssi() > -30) {
+            signalStrength = SignalStrength.VERY_HIGH;
+        } else if (getRssi() > -40) {
+            signalStrength = SignalStrength.HIGH;
+        } else if (getRssi() > -50) {
+            signalStrength = SignalStrength.MEDIUM;
+        } else if (getRssi() > -60) {
+            signalStrength = SignalStrength.LOW;
+        } else {
+            signalStrength = SignalStrength.VERY_LOW;
+        }
+        return signalStrength;
+    }
+
+    public BatteryLevel getBatteryLevel() {
+        BatteryLevel level = BatteryLevel.MEDIUM;
+        if (getBattery() > 2.9) {
+            level = BatteryLevel.VERY_GOOD;
+        } else if (getBattery() > 2.8) {
+            level = BatteryLevel.GOOD;
+        } else if (getBattery() > 2.7) {
+            level = BatteryLevel.MEDIUM;
+        } else if (getBattery() > 2.6) {
+            level = BatteryLevel.BAD;
+        } else {
+            level = BatteryLevel.VERY_BAD;
+        }
+        return level;
     }
 
     @Override
@@ -310,7 +342,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         dest.writeInt(mLostAdv);
         dest.writeInt(mLostCount);
         dest.writeInt(mIdleCount);
-        dest.writeInt(mSignalStrength);
+        dest.writeInt(mRssi);
         dest.writeLong(mTimestamp);
     }
 
@@ -324,7 +356,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         return "SensorPuckModel{" +
                 "mHRMRate=" + mHRMRate +
                 ", mHRMState=" + mHRMState +
-                ", mSignalStrength=" + mSignalStrength +
+                ", mRssi=" + mRssi +
                 ", mHRMSample=" + mHRMSample +
                 ", mBattery=" + mBattery +
                 ", mUVIndex=" + mUVIndex +

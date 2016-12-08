@@ -57,12 +57,12 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
     }
 
     public void startScan() {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "startScan()");
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
         mSubscription = mScanner.subscribe(this);
     }
 
     public void stopScan() {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopScan()");
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
         mSubscription.unsubscribe();
         mTimeoutHandler.removeCallbacks(mTimeoutTask);
     }
@@ -85,7 +85,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
 
     @Override
     public void onNext(final SensorPuckModel spModel) {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "onNext item received : " + spModel.getName());
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "onNext item received : " + spModel.getName());
         mTimeoutHandler.removeCallbacks(mTimeoutTask);
         if (mSpList.size() == 0) {
             mSpList.add(spModel);
@@ -104,6 +104,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
                 if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
                     mView.updateItemRemoved(i);
                     it.remove();
+                    positionToReplace = positionToReplace == i ? -1 : positionToReplace;
                     FirebaseCrash.log("item is removed: " + spModel.getName() +
                             " position: " + i);
                 } else {

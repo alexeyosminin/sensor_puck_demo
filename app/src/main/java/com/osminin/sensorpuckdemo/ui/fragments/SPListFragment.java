@@ -9,11 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
@@ -22,6 +25,7 @@ import com.osminin.sensorpuckdemo.presentation.SPListView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
@@ -39,6 +43,7 @@ import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
  */
 
 public final class SPListFragment extends BaseFragment implements SPListView, Observer<SensorPuckModel> {
+    private static final String TAG = SPListFragment.class.getSimpleName();
 
     @Inject
     SPListPresenter mPresenter;
@@ -51,6 +56,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onCreate");
         super.onCreate(savedInstanceState);
         App.getAppComponent(getActivity()).inject(this);
     }
@@ -58,12 +64,14 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onCreateView");
         mRootView = inflater.inflate(R.layout.fragment_sp_list, container, false);
         return mRootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
@@ -72,36 +80,42 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void onDestroyView() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroyView");
         super.onDestroyView();
         mPresenter.setView(null);
     }
 
     @Override
     public void onResume() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onResume");
         super.onResume();
         mPresenter.startScan();
     }
 
     @Override
     public void onPause() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onPause");
         super.onPause();
         mPresenter.stopScan();
     }
 
     @Override
     public void updateDeviceList(List<SensorPuckModel> list) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "updateDeviceList");
         mDevices = list;
         mAdapter.notifyDataSetChanged();
     }
 
     @Override
     public String getTitle() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "getTitle");
         return mContext.getString(R.string.app_name);
     }
 
     @Override
     public void showDetailsFragment(SensorPuckModel model) {
-        BaseFragment fragment = new SPDetailsFragment();
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "showDetailsFragment");
+        BaseFragment fragment = new com.osminin.sensorpuckdemo.ui.SPDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(SP_MODEL_EXTRA, model);
         fragment.setArguments(bundle);
@@ -129,6 +143,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     private void initList() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         mAdapter = new SPAdapter();
         RecyclerView.LayoutManager layoutManager;
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -137,24 +152,26 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
             layoutManager = new LinearLayoutManager(getContext());
         }
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter.getPositionClicks().
-                observeOn(AndroidSchedulers.mainThread()).
-                subscribe(this);
+        mAdapter.getPositionClicks()
+                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this);
         mRecyclerView.setAdapter(mAdapter);
     }
 
     @Override
     public void onCompleted() {
-
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
     }
 
     @Override
     public void onError(Throwable e) {
-
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
     }
 
     @Override
     public void onNext(SensorPuckModel sensorPuckModel) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         mPresenter.onDeviceSelected(sensorPuckModel);
     }
 
@@ -173,8 +190,27 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             final SensorPuckModel model = mDevices.get(position);
             ((SPViewHolder) holder).mCardName.setText(model.getName());
-            ((SPViewHolder) holder).mSignal.setText(model.getSignalStrength() + " dBm");
+            ((SPViewHolder) holder).mSignal.setText(model.getRssi() + " dBm");
             ((SPViewHolder) holder).mAddress.setText(model.getAddress());
+            int rssiImageId = 0;
+            switch (model.getSignalStrength()) {
+                case VERY_LOW:
+                    rssiImageId = R.drawable.ic_signal_cellular_0_bar_black_24dp;
+                    break;
+                case LOW:
+                    rssiImageId = R.drawable.ic_signal_cellular_1_bar_black_24dp;
+                    break;
+                case MEDIUM:
+                    rssiImageId = R.drawable.ic_signal_cellular_2_bar_black_24dp;
+                    break;
+                case HIGH:
+                    rssiImageId = R.drawable.ic_signal_cellular_3_bar_black_24dp;
+                    break;
+                case VERY_HIGH:
+                    rssiImageId = R.drawable.ic_signal_cellular_4_bar_black_24dp;
+                    break;
+            }
+            ((SPViewHolder) holder).mSignalImage.setImageResource(rssiImageId);
             holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -200,12 +236,12 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         class SPViewHolder extends RecyclerView.ViewHolder {
             @BindView(R.id.sp_card_name)
             TextView mCardName;
-
             @BindView(R.id.sp_card_signal)
             TextView mSignal;
-
             @BindView(R.id.sp_card_address)
             TextView mAddress;
+            @BindView(R.id.sp_card_rssi)
+            ImageView mSignalImage;
 
             public SPViewHolder(View itemView) {
                 super(itemView);

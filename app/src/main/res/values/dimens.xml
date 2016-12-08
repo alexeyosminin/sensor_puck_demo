@@ -7,8 +7,8 @@
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
 
-    <dimen name="cards_elevation">3dp</dimen>
-    <dimen name="cards_corner_radius">0px</dimen>
-    <dimen name="cards_content_padding">8dp</dimen>
+    <dimen name="cards_elevation">2dp</dimen>
+    <dimen name="cards_corner_radius">1dp</dimen>
+    <dimen name="cards_content_padding">16dp</dimen>
     <dimen name="cards_title_padding">13dp</dimen>
 </resources>

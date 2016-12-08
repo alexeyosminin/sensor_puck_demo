@@ -1,11 +1,13 @@
-package com.osminin.sensorpuckdemo.ui.fragments;
+package com.osminin.sensorpuckdemo.ui;
 
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.androidplot.Plot;
@@ -47,21 +49,25 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
     private static final int BPF_FILTER_LEN = BPF_ORDER * 2 + 1;
     @Inject
     SPDetailsPresenter mPresenter;
-    @BindView(R.id.sp_details_temperature)
+    @BindView(R.id.details_temperature)
     TextView mTemperature;
-    @BindView(R.id.sp_details_humidity)
+    @BindView(R.id.details_humidity)
     TextView mHumidity;
-    @BindView(R.id.sp_details_uv)
+    @BindView(R.id.details_uv)
     TextView mUv;
-    @BindView(R.id.sp_details_light)
+    @BindView(R.id.details_light)
     TextView mLight;
-    @BindView(R.id.sp_details_hr)
+    @BindView(R.id.details_heart_rate)
     TextView mHeartRate;
-    @BindView(R.id.sp_details_battery)
+    @BindView(R.id.details_battery)
     TextView mBattery;
-    @BindView(R.id.plot)
+    @BindView(R.id.details_battery_image)
+    ImageView mBatteryImage;
+
+    //@BindView(R.id.plot)
     XYPlot mPlot;
     private SensorPuckModel mModel;
+    private Snackbar mSnackbar;
     private SimpleXYSeries mLine;
     private int PrevDelta = 0;
     private int MaxDelta = 0;
@@ -116,7 +122,7 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
         mModel = getArguments().getParcelable(SP_MODEL_EXTRA);
         mPresenter.setModel(mModel);
         mPresenter.setView(this);
-        initializePlot();
+        //initializePlot();
     }
 
     @Override
@@ -128,11 +134,12 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
     @Override
     public void update(SensorPuckModel model) {
         mModel = model;
-        mTemperature.setText(String.format("%.2f",Float.toString(model.getTemperature())));
-        mLight.setText(String.format("%.2f",Integer.toString(model.getAmbientLight())));
+        mTemperature.setText(Float.toString(model.getTemperature()));
+        mLight.setText(Integer.toString(model.getAmbientLight()));
         mUv.setText(Integer.toString(model.getUVIndex()));
-        mHumidity.setText(String.format("%.2f",Float.toString(model.getHumidity())));
-        mBattery.setText(String.format("%.2f",Float.toString(model.getBattery())));
+        mHumidity.setText(Float.toString(model.getHumidity()));
+        mBattery.setText(Float.toString(model.getBattery()));
+        updateBatteryImage();
         String hrmText = null;
         switch (model.getHRMState()) {
             case HRM_STATE_IDLE:
@@ -146,7 +153,7 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
                 break;
             case HRM_STATE_ACTIVE:
                 hrmText = Integer.toString(model.getHRMRate()) + " bpm";
-                updateHRMPlot();
+                //updateHRMPlot();
                 break;
             case HRM_STATE_INVALID:
                 hrmText = mContext.getString(R.string.hrm_state_reposition);
@@ -172,7 +179,11 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
 
     @Override
     public void showError() {
-        //TODO:
+        if (mSnackbar != null && mSnackbar.isShown()) {
+            mSnackbar.dismiss();
+        }
+        mSnackbar = Snackbar.make(mRootView, "Connection lost", Snackbar.LENGTH_LONG);
+        mSnackbar.show();
     }
 
     @Override
@@ -274,5 +285,27 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
             BPF_Out[0] -= BPF_a[j] * BPF_Out[j];
 
         return (short) (BPF_Out[0] + 0.5); //0.5=roundup
+    }
+
+    private void updateBatteryImage() {
+        int resId = 0;
+        switch (mModel.getBatteryLevel()) {
+            case VERY_GOOD:
+                resId = R.drawable.battery;
+                break;
+            case GOOD:
+                resId = R.drawable.battery_80;
+                break;
+            case MEDIUM:
+                resId = R.drawable.battery_60;
+                break;
+            case BAD:
+                resId = R.drawable.battery_40;
+                break;
+            case VERY_BAD:
+                resId = R.drawable.battery_20;
+                break;
+        }
+        mBatteryImage.setImageResource(resId);
     }
 }
