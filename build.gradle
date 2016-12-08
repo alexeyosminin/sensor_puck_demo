@@ -50,9 +50,6 @@ ext.deps = [
         cardview: 'com.android.support:cardview-v7:23.0.+',
         recycler:'com.android.support:recyclerview-v7:23.0.+',
 
-        //AndroidPlot
-        androidplot: "com.androidplot:androidplot-core:1.2.2",
-
         //Firebase
         firebasecore: 'com.google.firebase:firebase-core:10.0.1',
         firebasecrash: 'com.google.firebase:firebase-crash:10.0.1'

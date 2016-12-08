@@ -2,6 +2,7 @@ package com.osminin.sensorpuckdemo.ui.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -53,6 +54,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     private List<SensorPuckModel> mDevices;
     private SPAdapter mAdapter;
+    private Handler mUiHandler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -75,6 +77,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
+        mUiHandler = new Handler();
         mPresenter.setView(this);
     }
 
@@ -97,13 +100,14 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onPause");
         super.onPause();
         mPresenter.stopScan();
+        mUiHandler.removeCallbacks(null);
     }
 
     @Override
-    public void updateDeviceList(List<SensorPuckModel> list) {
+    public void updateDeviceList(final List<SensorPuckModel> list) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "updateDeviceList");
-        mDevices = list;
-        mAdapter.notifyDataSetChanged();
+                mDevices = list;
+                mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -115,7 +119,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Override
     public void showDetailsFragment(SensorPuckModel model) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "showDetailsFragment");
-        BaseFragment fragment = new com.osminin.sensorpuckdemo.ui.SPDetailsFragment();
+        BaseFragment fragment = new SPDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(SP_MODEL_EXTRA, model);
         fragment.setArguments(bundle);
@@ -128,18 +132,18 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
-    public void updateItemInserted(int position) {
-        mAdapter.notifyItemInserted(position);
+    public void updateItemInserted(final int position) {
+                mAdapter.notifyItemInserted(position);
     }
 
     @Override
-    public void updateItemRemoved(int position) {
-        mAdapter.notifyItemRemoved(position);
+    public void updateItemRemoved(final int position) {
+                mAdapter.notifyItemRemoved(position);
     }
 
     @Override
-    public void updateItemChanged(int position) {
-        mAdapter.notifyItemChanged(position);
+    public void updateItemChanged(final int position) {
+                mAdapter.notifyItemChanged(position);
     }
 
     private void initList() {

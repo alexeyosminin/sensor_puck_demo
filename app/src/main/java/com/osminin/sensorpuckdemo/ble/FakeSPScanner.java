@@ -17,8 +17,10 @@ import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
+import rx.subjects.PublishSubject;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 
@@ -59,6 +61,7 @@ public final class FakeSPScanner implements SPScannerInterface {
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .subscribeOn(Schedulers.immediate())
                 .map(mDeviceMapper)
+                .observeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }
@@ -72,6 +75,7 @@ public final class FakeSPScanner implements SPScannerInterface {
                 .subscribeOn(Schedulers.immediate())
                 .map(mDeviceMapper)
                 .filter(predicate)
+                .observeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
     }

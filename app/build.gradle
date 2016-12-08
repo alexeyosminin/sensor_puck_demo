@@ -43,9 +43,6 @@ dependencies {
     compile deps.cardview
     compile deps.recycler
 
-    //AndroidPlot
-    compile deps.androidplot
-
     //Firebase
     compile deps.firebasecore
     compile deps.firebasecrash
