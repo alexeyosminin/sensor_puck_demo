@@ -1,7 +1,8 @@
-package com.osminin.sensorpuckdemo.ui;
+package com.osminin.sensorpuckdemo.ui.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -9,12 +10,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
@@ -41,6 +44,7 @@ import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
  */
 
 public final class SPListFragment extends BaseFragment implements SPListView, Observer<SensorPuckModel> {
+    private static final String TAG = SPListFragment.class.getSimpleName();
 
     @Inject
     SPListPresenter mPresenter;
@@ -50,9 +54,11 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     private List<SensorPuckModel> mDevices;
     private SPAdapter mAdapter;
+    private Handler mUiHandler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onCreate");
         super.onCreate(savedInstanceState);
         App.getAppComponent(getActivity()).inject(this);
     }
@@ -60,49 +66,59 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onCreateView");
         mRootView = inflater.inflate(R.layout.fragment_sp_list, container, false);
         return mRootView;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
+        mUiHandler = new Handler();
         mPresenter.setView(this);
     }
 
     @Override
     public void onDestroyView() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroyView");
         super.onDestroyView();
         mPresenter.setView(null);
     }
 
     @Override
     public void onResume() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onResume");
         super.onResume();
         mPresenter.startScan();
     }
 
     @Override
     public void onPause() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onPause");
         super.onPause();
         mPresenter.stopScan();
+        mUiHandler.removeCallbacks(null);
     }
 
     @Override
-    public void updateDeviceList(List<SensorPuckModel> list) {
-        mDevices = list;
-        mAdapter.notifyDataSetChanged();
+    public void updateDeviceList(final List<SensorPuckModel> list) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "updateDeviceList");
+                mDevices = list;
+                mAdapter.notifyDataSetChanged();
     }
 
     @Override
     public String getTitle() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "getTitle");
         return mContext.getString(R.string.app_name);
     }
 
     @Override
     public void showDetailsFragment(SensorPuckModel model) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "showDetailsFragment");
         BaseFragment fragment = new SPDetailsFragment();
         Bundle bundle = new Bundle();
         bundle.putParcelable(SP_MODEL_EXTRA, model);
@@ -116,21 +132,22 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
-    public void updateItemInserted(int position) {
-        mAdapter.notifyItemInserted(position);
+    public void updateItemInserted(final int position) {
+                mAdapter.notifyItemInserted(position);
     }
 
     @Override
-    public void updateItemRemoved(int position) {
-        mAdapter.notifyItemRemoved(position);
+    public void updateItemRemoved(final int position) {
+                mAdapter.notifyItemRemoved(position);
     }
 
     @Override
-    public void updateItemChanged(int position) {
-        mAdapter.notifyItemChanged(position);
+    public void updateItemChanged(final int position) {
+                mAdapter.notifyItemChanged(position);
     }
 
     private void initList() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         mAdapter = new SPAdapter();
         RecyclerView.LayoutManager layoutManager;
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
@@ -148,16 +165,17 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void onCompleted() {
-
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
     }
 
     @Override
     public void onError(Throwable e) {
-
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
     }
 
     @Override
     public void onNext(SensorPuckModel sensorPuckModel) {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         mPresenter.onDeviceSelected(sensorPuckModel);
     }
 

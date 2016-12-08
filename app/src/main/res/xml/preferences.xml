@@ -3,7 +3,13 @@
     <ListPreference
         android:key="@string/settings_mode_key"
         android:title="@string/settings_mode_label"
+        android:defaultValue="@string/settings_mode_real"
         android:entries="@array/mode_types"
         android:entryValues="@array/mode_types"/>
 
+    <ListPreference
+        android:key="@string/settings_fake_count_key"
+        android:title="@string/settings_fake_count_label"
+        android:entries="@array/fake_sp_count"
+        android:entryValues="@array/fake_sp_count"/>
 </PreferenceScreen>

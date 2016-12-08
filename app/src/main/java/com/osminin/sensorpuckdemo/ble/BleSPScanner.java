@@ -111,7 +111,7 @@ public final class BleSPScanner implements SPScannerInterface {
         if (!mSubject.hasObservers()) {
             mScanner.stopScan(mScanCallback);
             isRunning = false;
-            FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: ");
+            FirebaseCrash.logcat(Log.DEBUG, TAG, "stopped");
         }
     }
 }

@@ -7,11 +7,12 @@
     android:background="@android:color/background_light"
     android:clickable="true">
 
-    <GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:columnCount="2"
-                android:rowCount="6">
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:columnCount="2"
+        android:rowCount="6">
 
         <ImageView
             android:id="@+id/details_temperature_image"
@@ -21,8 +22,7 @@
             android:layout_columnWeight="0.5"
             android:layout_row="0"
             android:layout_rowWeight="0.33"
-            android:src="@drawable/thermometer"
-            />
+            android:src="@drawable/thermometer"/>
 
         <TextView
             android:id="@+id/details_temperature"
@@ -43,8 +43,7 @@
             android:layout_columnWeight="0.5"
             android:layout_row="0"
             android:layout_rowWeight="0.33"
-            android:src="@drawable/water_percent"
-            />
+            android:src="@drawable/water_percent"/>
 
         <TextView
             android:id="@+id/details_humidity"
@@ -65,8 +64,7 @@
             android:layout_columnWeight="0.5"
             android:layout_row="2"
             android:layout_rowWeight="0.33"
-            android:src="@drawable/lightbulb_on"
-            />
+            android:src="@drawable/lightbulb_on"/>
 
         <TextView
             android:id="@+id/details_light"
@@ -87,8 +85,7 @@
             android:layout_columnWeight="0.5"
             android:layout_row="2"
             android:layout_rowWeight="0.33"
-            android:src="@drawable/white_balance_sunny"
-            />
+            android:src="@drawable/white_balance_sunny"/>
 
         <TextView
             android:id="@+id/details_uv"
@@ -109,8 +106,7 @@
             android:layout_columnWeight="0.5"
             android:layout_row="4"
             android:layout_rowWeight="0.33"
-            android:src="@drawable/heart_pulse"
-            />
+            android:src="@drawable/heart_pulse"/>
 
         <TextView
             android:id="@+id/details_heart_rate"
@@ -131,8 +127,7 @@
             android:layout_columnWeight="0.5"
             android:layout_row="4"
             android:layout_rowWeight="0.33"
-            android:src="@drawable/battery"
-            />
+            android:src="@drawable/battery"/>
 
         <TextView
             android:id="@+id/details_battery"
