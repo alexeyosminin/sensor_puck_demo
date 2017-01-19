@@ -17,7 +17,6 @@ import javax.inject.Singleton;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.functions.Action0;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -26,6 +25,7 @@ import rx.subjects.PublishSubject;
  * Created by osminin on 16.11.2016.
  */
 
+@Singleton
 public final class BleSPScanner implements SPScannerInterface {
     private static final String TAG = BleSPScanner.class.getSimpleName();
     private PublishSubject<SensorPuckModel> mSubject = PublishSubject.create();
@@ -34,7 +34,6 @@ public final class BleSPScanner implements SPScannerInterface {
     private boolean isRunning;
 
     @Inject
-    @Singleton
     public BleSPScanner(final BluetoothManager bluetoothManager) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "BleSPScanner(): ");
         BluetoothAdapter adapter = bluetoothManager.getAdapter();
@@ -74,13 +73,10 @@ public final class BleSPScanner implements SPScannerInterface {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "subscribe: " + observer.getClass().getName());
         return mSubject
                 .asObservable()
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        if (!isRunning) {
-                            mScanner.startScan(mScanCallback);
-                            isRunning = true;
-                        }
+                .doOnSubscribe(() -> {
+                    if (!isRunning) {
+                        mScanner.startScan(mScanCallback);
+                        isRunning = true;
                     }
                 })
                 .subscribeOn(Schedulers.immediate())
@@ -93,13 +89,10 @@ public final class BleSPScanner implements SPScannerInterface {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "subscribe: " + observer.getClass().getName());
         return mSubject
                 .asObservable()
-                .doOnSubscribe(new Action0() {
-                    @Override
-                    public void call() {
-                        if (!isRunning) {
-                            mScanner.startScan(mScanCallback);
-                            isRunning = true;
-                        }
+                .doOnSubscribe(() -> {
+                    if (!isRunning) {
+                        mScanner.startScan(mScanCallback);
+                        isRunning = true;
                     }
                 })
                 .subscribeOn(Schedulers.immediate())

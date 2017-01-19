@@ -28,21 +28,15 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  * Created by osminin on 29.11.2016.
  */
 
+@Singleton
 public final class FakeSPScanner implements SPScannerInterface {
     private static final String TAG = FakeSPScanner.class.getSimpleName();
     private static final long BACKPRESSURE_BUFFER_CAPACITY = 1000;
     private Observable<Long> mIntervalProducer;
     private int mSPCount;
     private List<String> mMacAddress;
-    private Func1<Long, SensorPuckModel> mDeviceMapper = new Func1<Long, SensorPuckModel>() {
-        @Override
-        public SensorPuckModel call(Long aLong) {
-            return SensorPuckParser.generateRandomModel((int) (aLong % mSPCount), mMacAddress);
-        }
-    };
 
     @Inject
-    @Singleton
     public FakeSPScanner(int fakeSPCount) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "FakeSPScanner()");
         mSPCount = fakeSPCount;
@@ -60,7 +54,7 @@ public final class FakeSPScanner implements SPScannerInterface {
         return mIntervalProducer
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .subscribeOn(Schedulers.immediate())
-                .map(mDeviceMapper)
+                .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
                 .observeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(observer);
@@ -73,7 +67,7 @@ public final class FakeSPScanner implements SPScannerInterface {
         return mIntervalProducer
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .subscribeOn(Schedulers.immediate())
-                .map(mDeviceMapper)
+                .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
                 .filter(predicate)
                 .observeOn(Schedulers.computation())
                 .observeOn(AndroidSchedulers.mainThread())

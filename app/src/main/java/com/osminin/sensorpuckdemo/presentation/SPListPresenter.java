@@ -86,6 +86,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
     @Override
     public void onNext(final SensorPuckModel spModel) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "onNext item received : " + spModel.getName());
+        //TODO: rework this code using rx!!
         mTimeoutHandler.removeCallbacks(mTimeoutTask);
         if (mSpList.size() == 0) {
             mSpList.add(spModel);

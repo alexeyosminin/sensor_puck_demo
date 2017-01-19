@@ -5,8 +5,8 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.4'
+        classpath 'com.android.tools.build:gradle:2.2.+'
+        classpath 'com.google.guava:guava:19.0'
         classpath 'com.google.gms:google-services:3.0.0'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
@@ -42,9 +42,8 @@ ext.deps = [
         butterknifeprocessor: 'com.jakewharton:butterknife-compiler:8.4.0',
 
         // Dagger
-        dagger: 'com.google.dagger:dagger:2.0.2',
-        daggercompiler: 'com.google.dagger:dagger-compiler:2.0.2',
-        glassfishannotations: 'org.glassfish:javax.annotation:10.0-b28',
+        dagger: 'com.google.dagger:dagger:2.5',
+        daggercompiler: 'com.google.dagger:dagger-compiler:2.5',
 
         //CardView
         cardview: 'com.android.support:cardview-v7:23.0.+',
