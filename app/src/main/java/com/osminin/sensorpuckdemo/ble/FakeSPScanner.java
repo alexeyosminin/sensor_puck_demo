@@ -49,29 +49,12 @@ public final class FakeSPScanner implements SPScannerInterface {
     }
 
     @Override
-    public Subscription subscribe(Observer<? super SensorPuckModel> observer) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "subscribe: " + observer.getClass().getName());
+    public Observable<SensorPuckModel> startObserve() {
         return mIntervalProducer
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .subscribeOn(Schedulers.immediate())
                 .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
-                .observeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer);
-    }
-
-    @Override
-    public Subscription subscribe(Observer<? super SensorPuckModel> observer,
-                                  Func1<? super SensorPuckModel, Boolean> predicate) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "subscribe: " + observer.getClass().getName());
-        return mIntervalProducer
-                .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
-                .subscribeOn(Schedulers.immediate())
-                .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
-                .filter(predicate)
-                .observeOn(Schedulers.computation())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(observer);
+                .observeOn(Schedulers.computation());
     }
 
     private String randomMACAddress(int i) {

@@ -15,6 +15,7 @@ import javax.inject.Inject;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 
@@ -58,12 +59,17 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
 
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
-        mSubscription = mScanner.subscribe(this);
+        mSubscription = mScanner
+                .startObserve()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(this);
     }
 
     public void stopScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
-        mSubscription.unsubscribe();
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
         mTimeoutHandler.removeCallbacks(mTimeoutTask);
     }
 
@@ -79,6 +85,8 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
 
     @Override
     public void onError(Throwable e) {
+        //TODO: handle errors
+        mView.showError();
         FirebaseCrash.logcat(Log.ERROR, TAG, "onError()");
         FirebaseCrash.report(e);
     }

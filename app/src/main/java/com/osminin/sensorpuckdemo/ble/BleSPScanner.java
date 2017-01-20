@@ -8,6 +8,7 @@ import android.bluetooth.le.ScanResult;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
+import com.osminin.sensorpuckdemo.exceptions.BleNotEnabledException;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.functions.Func1;
@@ -69,35 +71,19 @@ public final class BleSPScanner implements SPScannerInterface {
     }
 
     @Override
-    public Subscription subscribe(Observer<? super SensorPuckModel> observer) {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "subscribe: " + observer.getClass().getName());
+    public Observable<SensorPuckModel> startObserve() {
         return mSubject
                 .asObservable()
                 .doOnSubscribe(() -> {
+                    if (mScanner == null) {
+                        throw new BleNotEnabledException();
+                    }
                     if (!isRunning) {
                         mScanner.startScan(mScanCallback);
                         isRunning = true;
                     }
                 })
-                .subscribeOn(Schedulers.immediate())
-                .subscribe(observer);
-    }
-
-    @Override
-    public Subscription subscribe(Observer<? super SensorPuckModel> observer,
-                                  Func1<? super SensorPuckModel, Boolean> predicate) {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "subscribe: " + observer.getClass().getName());
-        return mSubject
-                .asObservable()
-                .doOnSubscribe(() -> {
-                    if (!isRunning) {
-                        mScanner.startScan(mScanCallback);
-                        isRunning = true;
-                    }
-                })
-                .subscribeOn(Schedulers.immediate())
-                .filter(predicate)
-                .subscribe(observer);
+                .subscribeOn(Schedulers.immediate());
     }
 
     private void stopScanIfNoObservers() {

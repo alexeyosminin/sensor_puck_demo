@@ -54,7 +54,6 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
     ImageView mBatteryImage;
 
     private SensorPuckModel mModel;
-    private Snackbar mSnackbar;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,7 +75,6 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
         mModel = getArguments().getParcelable(SP_MODEL_EXTRA);
         mPresenter.setModel(mModel);
         mPresenter.setView(this);
-        //initializePlot();
     }
 
     @Override
@@ -107,7 +105,6 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
                 break;
             case HRM_STATE_ACTIVE:
                 hrmText = Integer.toString(model.getHRMRate()) + " bpm";
-                //updateHRMPlot();
                 break;
             case HRM_STATE_INVALID:
                 hrmText = mContext.getString(R.string.hrm_state_reposition);
@@ -129,15 +126,6 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
     public void onPause() {
         super.onPause();
         mPresenter.stopReceivingUpdates();
-    }
-
-    @Override
-    public void showError() {
-        if (mSnackbar != null && mSnackbar.isShown()) {
-            mSnackbar.dismiss();
-        }
-        mSnackbar = Snackbar.make(mRootView, "Connection lost", Snackbar.LENGTH_LONG);
-        mSnackbar.show();
     }
 
     @Override

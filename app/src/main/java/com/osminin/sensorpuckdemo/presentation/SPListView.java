@@ -19,4 +19,6 @@ public interface SPListView extends BaseView {
     void updateItemRemoved(int position);
 
     void updateItemChanged(int position);
+
+    void showError();
 }

@@ -7,10 +7,13 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.inject.Inject;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
@@ -27,12 +30,10 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
     private SPDetailsView mView;
     private SensorPuckModel mModel;
     private Subscription mSubscription;
-    private Handler mTimeoutHandler;
 
     @Inject
     public SPDetailsPresenter() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPDetailsPresenter()");
-        mTimeoutHandler = new Handler();
     }
 
     @Override
@@ -44,23 +45,23 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
     public void setModel(SensorPuckModel model) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "setModel: " + model.getName());
         mModel = model;
-        mTimeoutHandler.postDelayed(mTimeoutTask, SP_DISCOVERY_TIMEOUT);
     }
 
     public void startReceivingUpdates() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "startReceivingUpdates");
-        mSubscription = mScanner.subscribe(this, new Func1<SensorPuckModel, Boolean>() {
-            @Override
-            public Boolean call(SensorPuckModel sensorPuckModel) {
-                return sensorPuckModel.equals(mModel);
-            }
-        });
+        mSubscription = mScanner
+                .startObserve()
+                .filter(sensorPuckModel -> sensorPuckModel.equals(mModel))
+                .observeOn(AndroidSchedulers.mainThread())
+                .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
+                .subscribe(this);
     }
 
     public void stopReceivingUpdates() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopReceivingUpdates");
-        mSubscription.unsubscribe();
-        mTimeoutHandler.removeCallbacksAndMessages(null);
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
+        }
     }
 
     @Override
@@ -70,6 +71,7 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
 
     @Override
     public void onError(Throwable e) {
+        mView.showError();
         FirebaseCrash.logcat(Log.ERROR, TAG, "onError");
         FirebaseCrash.report(e);
     }
@@ -77,22 +79,10 @@ public final class SPDetailsPresenter implements BasePresenter<SPDetailsView>, O
     @Override
     public void onNext(SensorPuckModel spModel) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "onNext: " + spModel.getName());
-        mTimeoutHandler.removeCallbacksAndMessages(null);
-        mTimeoutHandler.postDelayed(mTimeoutTask, SP_DISCOVERY_TIMEOUT);
         if (spModel.getHRMSample().size() > 0) {
             spModel.setHRMPrevSample(spModel.getHRMSample().get(spModel.getHRMSample().size() - 1));
         }
         mModel = spModel;
         mView.update(spModel);
     }
-
-    private Runnable mTimeoutTask = new Runnable() {
-        @Override
-        public void run() {
-            FirebaseCrash.logcat(Log.DEBUG, TAG, "mTimeoutTask");
-            if (mView != null) {
-                mView.showError();
-            }
-        }
-    };
 }
