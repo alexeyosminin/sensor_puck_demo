@@ -4,7 +4,6 @@ import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
-import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -23,9 +22,11 @@ import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.presentation.SPListPresenter;
-import com.osminin.sensorpuckdemo.presentation.SPListView;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPListView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -105,13 +106,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
-    public void updateDeviceList(final List<SensorPuckModel> list) {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "updateDeviceList");
-                mDevices = list;
-                mAdapter.notifyDataSetChanged();
-    }
-
-    @Override
     public String getTitle() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "getTitle");
         return mContext.getString(R.string.app_name);
@@ -133,22 +127,27 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
-    public void updateItemInserted(final int position) {
-                mAdapter.notifyItemInserted(position);
+    public void updateItemInserted(int position, SensorPuckModel model) {
+        mDevices.add(position, model);
+        mAdapter.notifyItemInserted(position);
     }
 
     @Override
-    public void updateItemRemoved(final int position) {
-                mAdapter.notifyItemRemoved(position);
+    public void updateItemRemoved(int position) {
+        mDevices.remove(position);
+        mAdapter.notifyItemRemoved(position);
     }
 
     @Override
-    public void updateItemChanged(final int position) {
-                mAdapter.notifyItemChanged(position);
+    public void updateItemChanged(int position, SensorPuckModel model) {
+        mDevices.remove(position);
+        mDevices.add(position, model);
+        mAdapter.notifyItemChanged(position);
     }
 
     private void initList() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
+        mDevices = new LinkedList<>();
         mAdapter = new SPAdapter();
         RecyclerView.LayoutManager layoutManager;
         if (this.getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {

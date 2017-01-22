@@ -1,11 +1,12 @@
 package com.osminin.sensorpuckdemo.presentation;
 
-import android.os.Handler;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
+import com.osminin.sensorpuckdemo.presentation.interfaces.BasePresenter;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsView;
 
 import java.util.concurrent.TimeUnit;
 
@@ -14,7 +15,6 @@ import javax.inject.Inject;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Func1;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 

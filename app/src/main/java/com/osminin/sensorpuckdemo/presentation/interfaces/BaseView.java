@@ -1,4 +1,4 @@
-package com.osminin.sensorpuckdemo.presentation;
+package com.osminin.sensorpuckdemo.presentation.interfaces;
 
 import android.content.Context;
 

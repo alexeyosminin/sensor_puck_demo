@@ -30,34 +30,21 @@ import rx.subjects.PublishSubject;
 @Singleton
 public final class BleSPScanner implements SPScannerInterface {
     private static final String TAG = BleSPScanner.class.getSimpleName();
-    private PublishSubject<SensorPuckModel> mSubject = PublishSubject.create();
+    private PublishSubject<ScanResult> mSubject = PublishSubject.create();
     private ScanCallback mScanCallback;
     private BluetoothLeScanner mScanner;
+    private BluetoothManager mBluetoothManager;
     private boolean isRunning;
 
     @Inject
     public BleSPScanner(final BluetoothManager bluetoothManager) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "BleSPScanner(): ");
-        BluetoothAdapter adapter = bluetoothManager.getAdapter();
-        mScanner = adapter.getBluetoothLeScanner();
+        mBluetoothManager = bluetoothManager;
         mScanCallback = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: " + result.getDevice().getAddress());
-                if (SensorPuckParser.isSensorPuckRecord(result)) {
-                    SensorPuckModel spModel = SensorPuckParser.parse(result);
-                    mSubject.onNext(spModel);
-                }
-                stopScanIfNoObservers();
-            }
-
-            @Override
-            public void onBatchScanResults(List<ScanResult> results) {
-                FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: ");
-                List<SensorPuckModel> spModels = SensorPuckParser.parseBatchResult(results);
-                for (SensorPuckModel spModel : spModels) {
-                    mSubject.onNext(spModel);
-                }
+                mSubject.onNext(result);
                 stopScanIfNoObservers();
             }
 
@@ -74,16 +61,22 @@ public final class BleSPScanner implements SPScannerInterface {
     public Observable<SensorPuckModel> startObserve() {
         return mSubject
                 .asObservable()
-                .doOnSubscribe(() -> {
-                    if (mScanner == null) {
-                        throw new BleNotEnabledException();
-                    }
-                    if (!isRunning) {
-                        mScanner.startScan(mScanCallback);
-                        isRunning = true;
-                    }
-                })
-                .subscribeOn(Schedulers.immediate());
+                .doOnSubscribe(() -> enableBluetooth())
+                .filter(scanResult -> (SensorPuckParser.isSensorPuckRecord(scanResult)))
+                .map(scanResult -> SensorPuckParser.parse(scanResult))
+                .subscribeOn(Schedulers.computation());
+    }
+
+    private void enableBluetooth() {
+        if (!isRunning) {
+            BluetoothAdapter adapter = mBluetoothManager.getAdapter();
+            mScanner = adapter.getBluetoothLeScanner();
+            if (mScanner == null) {
+                throw new BleNotEnabledException();
+            }
+            mScanner.startScan(mScanCallback);
+            isRunning = true;
+        }
     }
 
     private void stopScanIfNoObservers() {

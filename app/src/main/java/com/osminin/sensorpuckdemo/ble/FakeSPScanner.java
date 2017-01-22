@@ -31,7 +31,7 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 @Singleton
 public final class FakeSPScanner implements SPScannerInterface {
     private static final String TAG = FakeSPScanner.class.getSimpleName();
-    private static final long BACKPRESSURE_BUFFER_CAPACITY = 1000;
+    private static final long BACKPRESSURE_BUFFER_CAPACITY = 100000;
     private Observable<Long> mIntervalProducer;
     private int mSPCount;
     private List<String> mMacAddress;
@@ -42,19 +42,25 @@ public final class FakeSPScanner implements SPScannerInterface {
         mSPCount = fakeSPCount;
         //all devices should be updated during SP_DISCOVERY_TIMEOUT
         mIntervalProducer = Observable.interval(SP_DISCOVERY_TIMEOUT / (mSPCount + 1), TimeUnit.MILLISECONDS);
-        mMacAddress = new ArrayList<>(mSPCount);
-        for (int i = 0; i < mSPCount; ++i) {
-            mMacAddress.add(randomMACAddress(i));
-        }
     }
 
     @Override
     public Observable<SensorPuckModel> startObserve() {
         return mIntervalProducer
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
-                .subscribeOn(Schedulers.immediate())
+                .doOnSubscribe(() -> generateMacAddresses())
+                .subscribeOn(Schedulers.computation())
                 .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
                 .observeOn(Schedulers.computation());
+    }
+
+    private void generateMacAddresses() {
+        if (mMacAddress == null || mMacAddress.isEmpty()) {
+            mMacAddress = new ArrayList<>(mSPCount);
+            for (int i = 0; i < mSPCount; ++i) {
+                mMacAddress.add(randomMACAddress(i));
+            }
+        }
     }
 
     private String randomMACAddress(int i) {

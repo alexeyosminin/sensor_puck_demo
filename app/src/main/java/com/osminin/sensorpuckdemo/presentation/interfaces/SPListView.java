@@ -1,4 +1,4 @@
-package com.osminin.sensorpuckdemo.presentation;
+package com.osminin.sensorpuckdemo.presentation.interfaces;
 
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
@@ -10,15 +10,13 @@ import java.util.List;
 
 public interface SPListView extends BaseView {
 
-    void updateDeviceList(List<SensorPuckModel> list);
-
     void showDetailsFragment(SensorPuckModel model);
 
-    void updateItemInserted(int position);
+    void updateItemInserted(int position, SensorPuckModel model);
 
     void updateItemRemoved(int position);
 
-    void updateItemChanged(int position);
+    void updateItemChanged(int position, SensorPuckModel model);
 
     void showError();
 }

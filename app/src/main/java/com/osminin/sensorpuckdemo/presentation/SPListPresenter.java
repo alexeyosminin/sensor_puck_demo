@@ -6,10 +6,11 @@ import android.util.Log;
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
+import com.osminin.sensorpuckdemo.model.UiSpModel;
+import com.osminin.sensorpuckdemo.presentation.interfaces.BasePresenter;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPListView;
 
-import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -23,31 +24,17 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenter implements BasePresenter<SPListView>, Observer<SensorPuckModel> {
+public class SPListPresenter implements BasePresenter<SPListView>, Observer<UiSpModel>{
     private static final String TAG = SPListPresenter.class.getSimpleName();
     @Inject
     SPScannerInterface mScanner;
     private SPListView mView;
-    private Handler mTimeoutHandler;
     private Subscription mSubscription;
-
-    private List<SensorPuckModel> mSpList;
-    private Runnable mTimeoutTask = new Runnable() {
-        @Override
-        public void run() {
-            if (mView != null) {
-                //remove last element by timeout
-                SensorPuckModel spModel = mSpList.remove(0);
-                mView.updateItemRemoved(0);
-                FirebaseCrash.logcat(Log.VERBOSE, TAG, "last item is removed: " + spModel.getName());
-            }
-        }
-    };
+    private LinkedList<SensorPuckModel> mSpList;
 
     @Inject
     SPListPresenter() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenter()");
-        mTimeoutHandler = new Handler();
         mSpList = new LinkedList<>();
     }
 
@@ -61,6 +48,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
         mSubscription = mScanner
                 .startObserve()
+                .map(spModel -> uiMapper(spModel))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
@@ -70,7 +58,6 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
         }
-        mTimeoutHandler.removeCallbacks(mTimeoutTask);
     }
 
     public void onDeviceSelected(SensorPuckModel model) {
@@ -92,46 +79,44 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<Sens
     }
 
     @Override
-    public void onNext(final SensorPuckModel spModel) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "onNext item received : " + spModel.getName());
-        //TODO: rework this code using rx!!
-        mTimeoutHandler.removeCallbacks(mTimeoutTask);
-        if (mSpList.size() == 0) {
-            mSpList.add(spModel);
-            mView.updateDeviceList(mSpList);
-            FirebaseCrash.log("first item is added: " + spModel.getName());
-        } else {
-            Iterator<SensorPuckModel> it = mSpList.iterator();
-            int i = 0;
-            int positionToReplace = -1;
-            while (it.hasNext()) {
-                long currentTime = System.currentTimeMillis();
-                SensorPuckModel cur = it.next();
-                if (cur.equals(spModel)) {
-                    positionToReplace = i;
-                }
-                if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
-                    mView.updateItemRemoved(i);
-                    it.remove();
-                    positionToReplace = positionToReplace == i ? -1 : positionToReplace;
-                    FirebaseCrash.log("item is removed: " + spModel.getName() +
-                            " position: " + i);
-                } else {
-                    ++i;
-                }
-            }
-            if (positionToReplace > -1) {
-                mSpList.remove(positionToReplace);
-                mSpList.add(positionToReplace, spModel);
-                mView.updateItemChanged(positionToReplace);
-                FirebaseCrash.log("item is replaced: " + spModel.getName() +
-                        " position: " + positionToReplace);
-            } else if (!mSpList.contains(spModel)) {
-                mSpList.add(spModel);
-                mView.updateItemInserted(mSpList.size() - 1);
-                FirebaseCrash.log("new item is added: " + spModel.getName());
-            }
+    public void onNext(UiSpModel uiSpModel) {
+        switch (uiSpModel.getCommand()) {
+            case ADD_NEW:
+                mView.updateItemInserted(uiSpModel.getIndex(), uiSpModel.getModel());
+                break;
+            case REPLACE:
+                mView.updateItemChanged(uiSpModel.getIndex(), uiSpModel.getModel());
+                break;
+            case REMOVE:
+                mView.updateItemRemoved(uiSpModel.getIndex());
+                break;
         }
-        mTimeoutHandler.postDelayed(mTimeoutTask, SP_DISCOVERY_TIMEOUT);
+    }
+
+    private UiSpModel uiMapper(SensorPuckModel spModel) {
+        int index = mSpList.indexOf(spModel);
+        UiSpModel result = new UiSpModel();
+        result.setModel(spModel);
+        result.setIndex(index);
+        if (index != -1) {
+            // spModel is present in mSpList so it should be updated or removed if
+            // its discovery time is more than SP_DISCOVERY_TIMEOUT
+            SensorPuckModel cur = mSpList.get(index);
+            long currentTime = System.currentTimeMillis();
+            if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
+                result.setCommand(UiSpModel.UiCommand.REMOVE);
+                mSpList.remove(result.getIndex());
+            } else {
+                result.setCommand(UiSpModel.UiCommand.REPLACE);
+                mSpList.remove(result.getIndex());
+                mSpList.add(result.getIndex(), result.getModel());
+            }
+        } else {
+            // it means that we have new one sp device so it should be just added
+            result.setCommand(UiSpModel.UiCommand.ADD_NEW);
+            result.setIndex(mSpList.size());
+            mSpList.add(result.getIndex(), result.getModel());
+        }
+        return result;
     }
 }

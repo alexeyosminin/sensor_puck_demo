@@ -2,7 +2,6 @@ package com.osminin.sensorpuckdemo.ui.fragments;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +12,7 @@ import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.presentation.SPDetailsPresenter;
-import com.osminin.sensorpuckdemo.presentation.SPDetailsView;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
 import javax.inject.Inject;
