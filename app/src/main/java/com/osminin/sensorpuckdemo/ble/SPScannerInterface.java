@@ -11,4 +11,6 @@ import rx.Observable;
 public interface SPScannerInterface {
     Observable<SensorPuckModel> startObserve();
     void stopObserve();
+    boolean isPermissionGranted();
+    boolean isEnabled();
 }

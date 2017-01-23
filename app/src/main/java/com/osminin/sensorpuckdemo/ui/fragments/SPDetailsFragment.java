@@ -1,5 +1,6 @@
 package com.osminin.sensorpuckdemo.ui.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -131,6 +132,10 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
     @Override
     public String getTitle() {
         return mModel.getName();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
     }
 
     private void updateBatteryImage() {

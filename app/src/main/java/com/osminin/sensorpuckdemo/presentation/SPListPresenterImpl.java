@@ -4,12 +4,15 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
+import com.osminin.sensorpuckdemo.exceptions.BleNotEnabledException;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.model.UiSpModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import javax.inject.Inject;
 
@@ -18,6 +21,7 @@ import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
+import static com.osminin.sensorpuckdemo.model.UiSpModel.UiCommand.ADD_NEW;
 
 /**
  * Created by osminin on 08.11.2016.
@@ -46,9 +50,14 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     @Override
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
+        if (!mScanner.isEnabled()) {
+            mView.showEnableBluetoothDialog();
+            return;
+        }
         mSubscription = mScanner
                 .startObserve()
                 .map(spModel -> uiMapper(spModel))
+                .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
@@ -58,8 +67,18 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
-            mScanner.stopObserve();
         }
+    }
+
+    @Override
+    public void destroy() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "destroy()");
+        mScanner.stopObserve();
+    }
+
+    @Override
+    public void onScannerFunctionalityEnabled() {
+        startScan();
     }
 
     @Override
@@ -75,8 +94,9 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
 
     @Override
     public void onError(Throwable e) {
-        //TODO: handle errors
-        mView.showError();
+        if (TimeoutException.class.getName().equals(e.getClass().getName())) {
+            restartAfterTimeout();
+        }
         FirebaseCrash.logcat(Log.ERROR, TAG, "onError()");
         FirebaseCrash.report(e);
     }
@@ -116,10 +136,19 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
             }
         } else {
             // it means that we have new one sp device so it should be just added
-            result.setCommand(UiSpModel.UiCommand.ADD_NEW);
+            result.setCommand(ADD_NEW);
             result.setIndex(mSpList.size());
             mSpList.add(result.getIndex(), result.getModel());
         }
         return result;
+    }
+
+    private void restartAfterTimeout() {
+        if (mSpList.size() != 0) {
+            mSpList.clear();
+            mView.updateAllItemsRemoved();
+            mView.showError();
+        }
+        startScan();
     }
 }

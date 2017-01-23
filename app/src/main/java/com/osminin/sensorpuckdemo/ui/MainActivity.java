@@ -28,10 +28,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
+import static com.osminin.sensorpuckdemo.Constants.SETTINGS_REQUEST_CODE;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentManager.OnBackStackChangedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
-    private static final int SETTINGS_REQUEST_CODE = 100;
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
@@ -144,12 +146,6 @@ public class MainActivity extends AppCompatActivity
         App.clearAppComponent(this);
         Handler handler = new Handler();
         //let activity be resumed before recreating
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                recreate();
-            }
-        });
-
+        handler.post(() -> recreate());
     }
 }

@@ -11,4 +11,6 @@ public interface SPListPresenter extends BasePresenter<SPListView> {
     void startScan();
     void stopScan();
     void onDeviceSelected(SensorPuckModel model);
+    void destroy();
+    void onScannerFunctionalityEnabled();
 }

@@ -17,5 +17,9 @@ public interface SPListView extends BaseView {
 
     void updateItemChanged(int position, SensorPuckModel model);
 
+    void updateAllItemsRemoved();
+
     void showError();
+
+    void showEnableBluetoothDialog();
 }

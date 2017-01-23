@@ -34,13 +34,13 @@ public final class BleSPScanner implements SPScannerInterface {
     private PublishSubject<ScanResult> mSubject = PublishSubject.create();
     private ScanCallback mScanCallback;
     private BluetoothLeScanner mScanner;
-    private BluetoothManager mBluetoothManager;
+    private BluetoothAdapter mAdapter;
     private boolean isRunning;
 
     @Inject
     public BleSPScanner(final BluetoothManager bluetoothManager) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "BleSPScanner(): ");
-        mBluetoothManager = bluetoothManager;
+        mAdapter = bluetoothManager.getAdapter();
         mScanCallback = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
@@ -70,8 +70,7 @@ public final class BleSPScanner implements SPScannerInterface {
     private void enableBluetooth() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "enableBluetooth()");
         if (!isRunning) {
-            BluetoothAdapter adapter = mBluetoothManager.getAdapter();
-            mScanner = adapter.getBluetoothLeScanner();
+            mScanner = mAdapter.getBluetoothLeScanner();
             if (mScanner == null) {
                 throw new BleNotEnabledException();
             }
@@ -83,10 +82,21 @@ public final class BleSPScanner implements SPScannerInterface {
     @Override
     public void stopObserve() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopObserve()");
-        if (!mSubject.hasObservers()) {
+        if (!mSubject.hasObservers() && mScanner != null) {
             mScanner.stopScan(mScanCallback);
             isRunning = false;
             FirebaseCrash.logcat(Log.DEBUG, TAG, "stopped");
         }
+    }
+
+    @Override
+    public boolean isPermissionGranted() {
+        //TODO: verify permission
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return mAdapter.isEnabled();
     }
 }

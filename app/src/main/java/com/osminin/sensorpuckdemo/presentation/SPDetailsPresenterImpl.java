@@ -53,8 +53,8 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
         mSubscription = mScanner
                 .startObserve()
                 .filter(sensorPuckModel -> sensorPuckModel.equals(mModel))
-                .observeOn(AndroidSchedulers.mainThread())
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
 

@@ -1,5 +1,7 @@
 package com.osminin.sensorpuckdemo.ui.fragments;
 
+import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -37,6 +39,8 @@ import rx.Observer;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
+import static android.app.Activity.RESULT_OK;
+import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
 import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
 
 /**
@@ -45,6 +49,7 @@ import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
 
 public final class SPListFragment extends BaseFragment implements SPListView, Observer<SensorPuckModel> {
     private static final String TAG = SPListFragment.class.getSimpleName();
+    private static final int CLICK_TIMEOUT = 500;
 
     @Inject
     SPListPresenter mPresenter;
@@ -87,17 +92,23 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
-    public void onResume() {
+    public void onStart() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onResume");
-        super.onResume();
+        super.onStart();
         mPresenter.startScan();
     }
 
     @Override
-    public void onPause() {
+    public void onStop() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onPause");
-        super.onPause();
+        super.onStop();
         mPresenter.stopScan();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mPresenter.destroy();
     }
 
     @Override
@@ -140,6 +151,26 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         mAdapter.notifyItemChanged(position);
     }
 
+    @Override
+    public void updateAllItemsRemoved() {
+        int count = mDevices.size();
+        mDevices.clear();
+        mAdapter.notifyItemRangeRemoved(0, count);
+    }
+
+    @Override
+    public void showEnableBluetoothDialog() {
+        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+        startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
+            mPresenter.onScannerFunctionalityEnabled();
+        }
+    }
+
     private void initList() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onViewCreated");
         mDevices = new LinkedList<>();
@@ -152,7 +183,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         }
         mRecyclerView.setLayoutManager(layoutManager);
         mAdapter.getPositionClicks()
-                .throttleFirst(500, TimeUnit.MILLISECONDS)
+                .throttleFirst(CLICK_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
         mRecyclerView.setAdapter(mAdapter);

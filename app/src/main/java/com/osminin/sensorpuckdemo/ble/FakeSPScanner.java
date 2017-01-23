@@ -59,6 +59,16 @@ public final class FakeSPScanner implements SPScannerInterface {
         // nothing to do here
     }
 
+    @Override
+    public boolean isPermissionGranted() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
     private void generateMacAddresses() {
         if (mMacAddress == null || mMacAddress.isEmpty()) {
             mMacAddress = new ArrayList<>(mSPCount);
