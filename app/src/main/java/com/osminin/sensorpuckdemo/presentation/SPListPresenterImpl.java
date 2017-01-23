@@ -1,14 +1,13 @@
 package com.osminin.sensorpuckdemo.presentation;
 
-import android.os.Handler;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.model.UiSpModel;
-import com.osminin.sensorpuckdemo.presentation.interfaces.BasePresenter;
-import com.osminin.sensorpuckdemo.presentation.interfaces.SPListView;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
+import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
 import java.util.LinkedList;
 
@@ -24,18 +23,18 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenter implements BasePresenter<SPListView>, Observer<UiSpModel>{
-    private static final String TAG = SPListPresenter.class.getSimpleName();
-    @Inject
+public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>{
+    private static final String TAG = SPListPresenterImpl.class.getSimpleName();
     SPScannerInterface mScanner;
     private SPListView mView;
     private Subscription mSubscription;
     private LinkedList<SensorPuckModel> mSpList;
 
     @Inject
-    SPListPresenter() {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenter()");
+    public SPListPresenterImpl(SPScannerInterface scannerInterface) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenterImpl()");
         mSpList = new LinkedList<>();
+        mScanner = scannerInterface;
     }
 
     @Override
@@ -44,6 +43,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<UiSp
         mView = view;
     }
 
+    @Override
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
         mSubscription = mScanner
@@ -53,6 +53,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<UiSp
                 .subscribe(this);
     }
 
+    @Override
     public void stopScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
@@ -60,6 +61,7 @@ public class SPListPresenter implements BasePresenter<SPListView>, Observer<UiSp
         }
     }
 
+    @Override
     public void onDeviceSelected(SensorPuckModel model) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "onDeviceSelected: " + model.getName());
         mView.showDetailsFragment(model);

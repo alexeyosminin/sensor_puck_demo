@@ -1,8 +1,7 @@
-package com.osminin.sensorpuckdemo.presentation.interfaces;
+package com.osminin.sensorpuckdemo.ui.views;
 
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
-
-import java.util.List;
+import com.osminin.sensorpuckdemo.ui.base.BaseView;
 
 /**
  * Created by osminin on 08.11.2016.

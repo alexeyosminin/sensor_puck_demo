@@ -2,7 +2,6 @@ package com.osminin.sensorpuckdemo.ui.fragments;
 
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -21,11 +20,10 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
-import com.osminin.sensorpuckdemo.presentation.SPListPresenter;
-import com.osminin.sensorpuckdemo.presentation.interfaces.SPListView;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
+import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -56,7 +54,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     private List<SensorPuckModel> mDevices;
     private SPAdapter mAdapter;
-    private Handler mUiHandler;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,7 +76,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
-        mUiHandler = new Handler();
         mPresenter.setView(this);
     }
 
@@ -102,7 +98,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onPause");
         super.onPause();
         mPresenter.stopScan();
-        mUiHandler.removeCallbacks(null);
     }
 
     @Override

@@ -19,6 +19,7 @@ import javax.inject.Singleton;
 import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -38,21 +39,19 @@ public final class BleSPScanner implements SPScannerInterface {
 
     @Inject
     public BleSPScanner(final BluetoothManager bluetoothManager) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "BleSPScanner(): ");
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "BleSPScanner(): ");
         mBluetoothManager = bluetoothManager;
         mScanCallback = new ScanCallback() {
             @Override
             public void onScanResult(int callbackType, ScanResult result) {
                 FirebaseCrash.logcat(Log.VERBOSE, TAG, "onScanResult: " + result.getDevice().getAddress());
                 mSubject.onNext(result);
-                stopScanIfNoObservers();
             }
 
             @Override
             public void onScanFailed(int errorCode) {
                 FirebaseCrash.logcat(Log.ERROR, TAG, "onScanFailed: " + errorCode);
                 mSubject.onError(new Exception("error: " + errorCode));
-                stopScanIfNoObservers();
             }
         };
     }
@@ -64,10 +63,12 @@ public final class BleSPScanner implements SPScannerInterface {
                 .doOnSubscribe(() -> enableBluetooth())
                 .filter(scanResult -> (SensorPuckParser.isSensorPuckRecord(scanResult)))
                 .map(scanResult -> SensorPuckParser.parse(scanResult))
-                .subscribeOn(Schedulers.computation());
+                .subscribeOn(Schedulers.computation())
+                .unsubscribeOn(AndroidSchedulers.mainThread());
     }
 
     private void enableBluetooth() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "enableBluetooth()");
         if (!isRunning) {
             BluetoothAdapter adapter = mBluetoothManager.getAdapter();
             mScanner = adapter.getBluetoothLeScanner();
@@ -79,7 +80,8 @@ public final class BleSPScanner implements SPScannerInterface {
         }
     }
 
-    private void stopScanIfNoObservers() {
+    public void stopScanIfNoObservers() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopScanIfNoObservers()");
         if (!mSubject.hasObservers()) {
             mScanner.stopScan(mScanCallback);
             isRunning = false;

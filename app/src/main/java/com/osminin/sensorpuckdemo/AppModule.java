@@ -8,6 +8,8 @@ import android.preference.PreferenceManager;
 import com.osminin.sensorpuckdemo.ble.BleSPScanner;
 import com.osminin.sensorpuckdemo.ble.FakeSPScanner;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
+import com.osminin.sensorpuckdemo.presentation.SPListPresenterImpl;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 
 import javax.inject.Singleton;
 
@@ -45,5 +47,10 @@ public class AppModule {
     @Singleton
     public BluetoothManager provideBluetoothManager() {
         return (BluetoothManager) app.getSystemService(Context.BLUETOOTH_SERVICE);
+    }
+
+    @Provides
+    public SPListPresenter provideSPListPresenter(SPScannerInterface scannerInterface) {
+        return new SPListPresenterImpl(scannerInterface);
     }
 }

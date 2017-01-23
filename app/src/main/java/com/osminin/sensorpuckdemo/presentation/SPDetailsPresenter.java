@@ -6,7 +6,7 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.BasePresenter;
-import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsView;
+import com.osminin.sensorpuckdemo.ui.views.SPDetailsView;
 
 import java.util.concurrent.TimeUnit;
 

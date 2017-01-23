@@ -9,7 +9,6 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.osminin.sensorpuckdemo.R;
-import com.osminin.sensorpuckdemo.presentation.interfaces.BaseView;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
