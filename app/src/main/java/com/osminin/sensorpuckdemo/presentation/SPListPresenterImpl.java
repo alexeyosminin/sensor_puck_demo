@@ -25,7 +25,7 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 
 public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>{
     private static final String TAG = SPListPresenterImpl.class.getSimpleName();
-    SPScannerInterface mScanner;
+    private final SPScannerInterface mScanner;
     private SPListView mView;
     private Subscription mSubscription;
     private LinkedList<SensorPuckModel> mSpList;
@@ -58,6 +58,7 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
+            mScanner.stopObserve();
         }
     }
 

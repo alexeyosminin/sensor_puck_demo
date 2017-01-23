@@ -80,8 +80,9 @@ public final class BleSPScanner implements SPScannerInterface {
         }
     }
 
-    public void stopScanIfNoObservers() {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopScanIfNoObservers()");
+    @Override
+    public void stopObserve() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopObserve()");
         if (!mSubject.hasObservers()) {
             mScanner.stopScan(mScanCallback);
             isRunning = false;

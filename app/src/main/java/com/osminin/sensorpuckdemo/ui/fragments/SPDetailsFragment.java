@@ -11,7 +11,8 @@ import android.widget.TextView;
 import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
-import com.osminin.sensorpuckdemo.presentation.SPDetailsPresenter;
+import com.osminin.sensorpuckdemo.presentation.SPDetailsPresenterImpl;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPDetailsView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 

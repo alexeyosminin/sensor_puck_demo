@@ -54,6 +54,11 @@ public final class FakeSPScanner implements SPScannerInterface {
                 .observeOn(Schedulers.computation());
     }
 
+    @Override
+    public void stopObserve() {
+        // nothing to do here
+    }
+
     private void generateMacAddresses() {
         if (mMacAddress == null || mMacAddress.isEmpty()) {
             mMacAddress = new ArrayList<>(mSPCount);

@@ -8,7 +8,9 @@ import android.preference.PreferenceManager;
 import com.osminin.sensorpuckdemo.ble.BleSPScanner;
 import com.osminin.sensorpuckdemo.ble.FakeSPScanner;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
+import com.osminin.sensorpuckdemo.presentation.SPDetailsPresenterImpl;
 import com.osminin.sensorpuckdemo.presentation.SPListPresenterImpl;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsPresenter;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 
 import javax.inject.Singleton;
@@ -50,7 +52,12 @@ public class AppModule {
     }
 
     @Provides
-    public SPListPresenter provideSPListPresenter(SPScannerInterface scannerInterface) {
-        return new SPListPresenterImpl(scannerInterface);
+    public SPListPresenter provideSPListPresenter(SPScannerInterface scanner) {
+        return new SPListPresenterImpl(scanner);
+    }
+
+    @Provides
+    public SPDetailsPresenter provideSPDetailsPresenter(SPScannerInterface scanner) {
+        return new SPDetailsPresenterImpl(scanner);
     }
 }
