@@ -63,8 +63,7 @@ public final class BleSPScanner implements SPScannerInterface {
                 .doOnSubscribe(() -> enableBluetooth())
                 .filter(scanResult -> (SensorPuckParser.isSensorPuckRecord(scanResult)))
                 .map(scanResult -> SensorPuckParser.parse(scanResult))
-                .subscribeOn(Schedulers.computation())
-                .unsubscribeOn(AndroidSchedulers.mainThread());
+                .subscribeOn(Schedulers.computation());
     }
 
     private void enableBluetooth() {

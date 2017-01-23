@@ -36,6 +36,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import rx.Observable;
 import rx.Observer;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
@@ -59,6 +60,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     private List<SensorPuckModel> mDevices;
     private SPAdapter mAdapter;
+    private Subscription mAdapterSubscription;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -107,8 +109,10 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void onDestroy() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroy");
         super.onDestroy();
         mPresenter.destroy();
+        mAdapterSubscription.unsubscribe();
     }
 
     @Override
@@ -160,12 +164,14 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void showEnableBluetoothDialog() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
         Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
         startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
         if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
             mPresenter.onScannerFunctionalityEnabled();
         }
@@ -182,7 +188,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
             layoutManager = new LinearLayoutManager(getContext());
         }
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter.getPositionClicks()
+        mAdapterSubscription = mAdapter.getPositionClicks()
                 .throttleFirst(CLICK_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
@@ -241,12 +247,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
                     break;
             }
             ((SPViewHolder) holder).mSignalImage.setImageResource(rssiImageId);
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    mOnClickSubject.onNext(model);
-                }
-            });
+            holder.itemView.setOnClickListener(view -> mOnClickSubject.onNext(model));
         }
 
         @Override

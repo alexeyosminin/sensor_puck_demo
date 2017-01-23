@@ -43,11 +43,13 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
         mView = view;
     }
 
+    @Override
     public void setModel(SensorPuckModel model) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "setModel: " + model.getName());
         mModel = model;
     }
 
+    @Override
     public void startReceivingUpdates() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "startReceivingUpdates");
         mSubscription = mScanner
@@ -58,6 +60,7 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
                 .subscribe(this);
     }
 
+    @Override
     public void stopReceivingUpdates() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopReceivingUpdates");
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
