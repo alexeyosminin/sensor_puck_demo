@@ -81,7 +81,8 @@ public final class BleSPScanner implements SPScannerInterface {
     @Override
     public void stopObserve() {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "stopObserve()");
-        if (!mSubject.hasObservers() && mScanner != null) {
+        if (!mSubject.hasObservers() && isRunning &&
+                mAdapter.getState() == BluetoothAdapter.STATE_ON) {
             mScanner.stopScan(mScanCallback);
             isRunning = false;
             FirebaseCrash.logcat(Log.DEBUG, TAG, "stopped");

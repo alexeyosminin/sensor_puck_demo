@@ -68,6 +68,7 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
         if (mSubscription != null && !mSubscription.isUnsubscribed()) {
             mSubscription.unsubscribe();
         }
+        mSpList.clear();
     }
 
     @Override
@@ -77,8 +78,10 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     }
 
     @Override
-    public void onScannerFunctionalityEnabled() {
-        startScan();
+    public void onScannerFunctionalityEnabled(boolean isEnabled) {
+        if (isEnabled) {
+            startScan();
+        }
     }
 
     @Override
@@ -96,9 +99,10 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     public void onError(Throwable e) {
         if (TimeoutException.class.getName().equals(e.getClass().getName())) {
             restartAfterTimeout();
+        } else {
+            FirebaseCrash.logcat(Log.ERROR, TAG, "onError()");
+            FirebaseCrash.report(e);
         }
-        FirebaseCrash.logcat(Log.ERROR, TAG, "onError()");
-        FirebaseCrash.report(e);
     }
 
     @Override

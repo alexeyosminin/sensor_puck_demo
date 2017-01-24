@@ -95,16 +95,18 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void onStart() {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "onResume");
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onStart");
         super.onStart();
         mPresenter.startScan();
     }
 
     @Override
     public void onStop() {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "onPause");
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "onStop");
         super.onStop();
         mPresenter.stopScan();
+        mDevices.clear();
+        mAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -172,8 +174,8 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
-        if (requestCode == REQUEST_ENABLE_BT && resultCode == RESULT_OK) {
-            mPresenter.onScannerFunctionalityEnabled();
+        if (requestCode == REQUEST_ENABLE_BT) {
+            mPresenter.onScannerFunctionalityEnabled(resultCode == RESULT_OK);
         }
     }
 

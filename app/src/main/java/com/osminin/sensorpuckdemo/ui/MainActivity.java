@@ -52,12 +52,7 @@ public class MainActivity extends AppCompatActivity
         mActionBarDrawerToggle = new ActionBarDrawerToggle(
                 this, drawer, mToolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(mActionBarDrawerToggle);
-        mActionBarDrawerToggle.setToolbarNavigationClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                MainActivity.this.onBackPressed();
-            }
-        });
+        mActionBarDrawerToggle.setToolbarNavigationClickListener(view -> MainActivity.this.onBackPressed());
         setBurgerButtonState();
 
         NavigationView navigationView = ButterKnife.findById(this, R.id.nav_view);
@@ -94,8 +89,8 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivityForResult(intent, SETTINGS_REQUEST_CODE);
-        } else if (id == R.id.nav_send) {
-
+        } else if (id == R.id.nav_about) {
+            //TODO: about screen
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import static android.R.attr.x;
+
 /**
  * Created by osminin on 17.11.2016.
  */
@@ -28,6 +30,8 @@ final class SensorPuckParser {
     private static final int LIGHT_INDEX_LSB = 10;
     private static final int HUNIDITY_INDEX_LSB = 11;
     private static final int HUNIDITY_INDEX_MSB = 12;
+    private static final int HRM_INDEX_LSB = 11;
+    private static final int HRM_INDEX_MSB = 12;
     private static final int TEMPERATURE_INDEX_LSB = 13;
     private static final int TEMPERATURE_INDEX_MSB = 14;
     private static final int LIGHT_INDEX_MSB = 16;
@@ -36,7 +40,7 @@ final class SensorPuckParser {
 
 
     //min and max values for fake data
-    private static final int HRM_RATE_MAX = 120;
+    private static final int HRM_RATE_MAX = 180;
     private static final int HRM_RATE_MIN = 40;
     private static final int SIGNAL_STRENGTH_MAX = -30;
     private static final int SIGNAL_STRENGTH_MIN = -70;
@@ -48,6 +52,9 @@ final class SensorPuckParser {
     private static final float BATTERY_MIN = 2.5f;
     private static final int LIGHT_MAX = 1000;
     private static final int LIGHT_MIN = 700;
+
+    private static final int MAC_LAST_PAIR = 5;
+    private static final int MAC_PRE_LAST_PAIR = 4;
 
     private static final String TAG = SensorPuckParser.class.getSimpleName();
 
@@ -85,16 +92,6 @@ final class SensorPuckParser {
         return spModel;
     }
 
-    static List<SensorPuckModel> parseBatchResult(List<ScanResult> results) {
-        List<SensorPuckModel> spModels = new ArrayList<>(results.size());
-        for (ScanResult result : results) {
-            if (isSensorPuckRecord(result)) {
-                spModels.add(parse(result));
-            }
-        }
-        return spModels;
-    }
-
     static SensorPuckModel generateRandomModel(int seed, List<String> address) {
         SensorPuckModel spModel = new SensorPuckModel();
         spModel.setAddress(address.get(seed));
@@ -124,12 +121,13 @@ final class SensorPuckParser {
     private static void parseBiometric(SensorPuckModel spModel, byte[] data) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "parseBiometric: " + spModel.getName());
         spModel.setMeasurementMode(BIOMETRIC_MODE);
-        spModel.setSequence(Int8(data[8]));
-        spModel.setHRMState(Int8(data[11]));
-        spModel.setHRMRate(Int8(data[12]));
+        spModel.setSequence(Int8(data[SEQUENCE_INDEX]));
+        spModel.setHRMState(Int8(data[HRM_INDEX_LSB]));
+        spModel.setHRMRate(Int8(data[HRM_INDEX_MSB]));
 
-        for (int x = 0; x < HRM_SAMPLE_COUNT; x++) {
-            spModel.getHRMSample().add(Int16(data[5 + (x * 2) + 8], data[6 + (x * 2) + 8]));
+        for (int i = 0; i < HRM_SAMPLE_COUNT; i++) {
+            spModel.getHRMSample().add(Int16(data[HRM_SAMPLE_COUNT + (i * 2) + SEQUENCE_INDEX],
+                    data[HRM_SAMPLE_COUNT + 1 + (i * 2) + SEQUENCE_INDEX]));
         }
     }
 
@@ -138,11 +136,11 @@ final class SensorPuckParser {
     }
 
     private static int Int16(byte lsb, byte msb) {
-        return Int8(lsb) + (Int8(msb) * 0x00000100);
+        return Int8(lsb) | (Int8(msb) << 8);
     }
 
     private static String defaultName(String address) {
         String[] part = address.split(":");
-        return "Puck_" + part[4] + part[5];
+        return "Puck_" + part[MAC_PRE_LAST_PAIR] + part[MAC_LAST_PAIR];
     }
 }
