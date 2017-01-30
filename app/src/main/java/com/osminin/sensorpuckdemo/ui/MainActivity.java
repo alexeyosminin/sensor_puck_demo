@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == R.id.nav_settings) {
+            getSupportFragmentManager().popBackStack();
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivityForResult(intent, SETTINGS_REQUEST_CODE);
         } else if (id == R.id.nav_about) {
