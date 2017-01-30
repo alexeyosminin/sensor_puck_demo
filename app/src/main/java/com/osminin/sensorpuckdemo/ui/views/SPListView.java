@@ -22,4 +22,10 @@ public interface SPListView extends BaseView {
     void showError();
 
     void showEnableBluetoothDialog();
+
+    void showSettingsFragment();
+
+    void onSettingsChanged(int resultCode);
+
+    void restartWithNewConfig();
 }

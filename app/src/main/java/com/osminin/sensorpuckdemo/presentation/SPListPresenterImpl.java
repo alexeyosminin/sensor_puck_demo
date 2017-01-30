@@ -85,6 +85,11 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     }
 
     @Override
+    public void onSettingsChanged() {
+        mView.restartWithNewConfig();
+    }
+
+    @Override
     public void onDeviceSelected(SensorPuckModel model) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "onDeviceSelected: " + model.getName());
         mView.showDetailsFragment(model);

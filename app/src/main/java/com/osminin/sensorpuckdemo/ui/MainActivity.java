@@ -21,6 +21,7 @@ import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 import com.osminin.sensorpuckdemo.ui.fragments.SPListFragment;
+import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +38,9 @@ public class MainActivity extends AppCompatActivity
 
     @BindView(R.id.toolbar)
     Toolbar mToolbar;
+
     private ActionBarDrawerToggle mActionBarDrawerToggle;
+    private SPListView mHomeView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,16 +61,17 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = ButterKnife.findById(this, R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         getSupportFragmentManager().addOnBackStackChangedListener(this);
-        BaseFragment spListFragment = new SPListFragment();
-        showHomeScreen(spListFragment);
+        showHomeScreen();
     }
 
-    public void showHomeScreen(BaseFragment fragment) {
+    private void showHomeScreen() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "showHomeScreen");
         getSupportFragmentManager().popBackStack();
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        transaction.replace(R.id.content_main, fragment);
+        SPListFragment spListFragment = new SPListFragment();
+        transaction.replace(R.id.content_main, spListFragment);
         transaction.commit();
+        mHomeView = spListFragment;
     }
 
     @Override
@@ -88,8 +92,7 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_settings) {
             getSupportFragmentManager().popBackStack();
-            Intent intent = new Intent(this, SettingsActivity.class);
-            startActivityForResult(intent, SETTINGS_REQUEST_CODE);
+            mHomeView.showSettingsFragment();
         } else if (id == R.id.nav_about) {
             //TODO: about screen
         }
@@ -118,6 +121,12 @@ public class MainActivity extends AppCompatActivity
             mToolbar.setTitle(title);
         }
         setBurgerButtonState();
+    }
+
+    public void restartConfiguration() {
+        App.clearAppComponent(this);
+        App.getAppComponent(this).inject(this);
+        showHomeScreen();
     }
 
     @Override

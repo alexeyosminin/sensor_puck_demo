@@ -60,11 +60,6 @@ public final class FakeSPScanner implements SPScannerInterface {
     }
 
     @Override
-    public boolean isPermissionGranted() {
-        return true;
-    }
-
-    @Override
     public boolean isEnabled() {
         return true;
     }

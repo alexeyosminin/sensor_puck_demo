@@ -23,6 +23,7 @@ import com.osminin.sensorpuckdemo.App;
 import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
+import com.osminin.sensorpuckdemo.ui.MainActivity;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 
@@ -42,6 +43,7 @@ import rx.subjects.PublishSubject;
 
 import static android.app.Activity.RESULT_OK;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
+import static com.osminin.sensorpuckdemo.Constants.SETTINGS_REQUEST_CODE;
 import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
 
 /**
@@ -130,12 +132,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         Bundle bundle = new Bundle();
         bundle.putParcelable(SP_MODEL_EXTRA, model);
         fragment.setArguments(bundle);
-        FragmentManager fragmentManager = ((AppCompatActivity) mContext).
-                getSupportFragmentManager();
-        FragmentTransaction transaction = fragmentManager.beginTransaction();
-        transaction.add(R.id.content_main, fragment);
-        transaction.addToBackStack(fragment.getFragmentTag());
-        transaction.commit();
+        showFragment(fragment);
     }
 
     @Override
@@ -172,6 +169,26 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
+    public void showSettingsFragment() {
+        FirebaseCrash.logcat(Log.DEBUG, TAG, "showSettingsFragment");
+        BaseFragment settingsFragment = new SettingsFragment();
+        settingsFragment.setTargetFragment(this, SETTINGS_REQUEST_CODE);
+        showFragment(settingsFragment);
+    }
+
+    @Override
+    public void onSettingsChanged(int resultCode) {
+        if (resultCode == RESULT_OK) {
+            mPresenter.onSettingsChanged();
+        }
+    }
+
+    @Override
+    public void restartWithNewConfig() {
+        ((MainActivity) mContext).restartConfiguration();
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
         if (requestCode == REQUEST_ENABLE_BT) {
@@ -195,6 +212,15 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void showFragment(BaseFragment fragment) {
+        FragmentManager fragmentManager = ((AppCompatActivity) mContext).
+                getSupportFragmentManager();
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        transaction.add(R.id.content_main, fragment);
+        transaction.addToBackStack(fragment.getFragmentTag());
+        transaction.commit();
     }
 
     @Override

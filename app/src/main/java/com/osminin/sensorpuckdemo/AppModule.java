@@ -10,8 +10,10 @@ import com.osminin.sensorpuckdemo.ble.FakeSPScanner;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.presentation.SPDetailsPresenterImpl;
 import com.osminin.sensorpuckdemo.presentation.SPListPresenterImpl;
+import com.osminin.sensorpuckdemo.presentation.SettingsPresenterImpl;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsPresenter;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
+import com.osminin.sensorpuckdemo.presentation.interfaces.SettingsPresenter;
 
 import javax.inject.Singleton;
 
@@ -59,5 +61,10 @@ public class AppModule {
     @Provides
     public SPDetailsPresenter provideSPDetailsPresenter(SPScannerInterface scanner) {
         return new SPDetailsPresenterImpl(scanner);
+    }
+
+    @Provides
+    public SettingsPresenter provideSettingsPresenter(SharedPreferences sharedPreferences) {
+        return new SettingsPresenterImpl(sharedPreferences);
     }
 }

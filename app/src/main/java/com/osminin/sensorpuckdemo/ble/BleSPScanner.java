@@ -90,12 +90,6 @@ public final class BleSPScanner implements SPScannerInterface {
     }
 
     @Override
-    public boolean isPermissionGranted() {
-        //TODO: verify permission
-        return true;
-    }
-
-    @Override
     public boolean isEnabled() {
         return mAdapter.isEnabled();
     }

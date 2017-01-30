@@ -31,10 +31,6 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/action_settings"
-            android:theme="@style/AppTheme.NoActionBar"/>
     </application>
 
 </manifest>
