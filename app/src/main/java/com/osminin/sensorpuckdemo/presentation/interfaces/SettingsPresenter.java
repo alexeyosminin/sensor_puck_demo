@@ -13,6 +13,5 @@ public interface SettingsPresenter extends BasePresenter <SettingsView> {
     String[] getModesArray();
     String getCurrentMode();
     void fillInitialValues();
-
     int getCurrentModeIndex();
 }

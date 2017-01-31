@@ -20,6 +20,7 @@ import java.util.Arrays;
 import javax.inject.Inject;
 
 import static android.app.Activity.RESULT_OK;
+import static com.osminin.sensorpuckdemo.Constants.SETTINGS_REQUEST_CODE;
 
 
 /**
@@ -81,7 +82,7 @@ public class SettingsFragment extends CustomPreferenceFragment implements Settin
 
     @Override
     public String getTitle() {
-        return getString(R.string.action_settings);
+        return getString(R.string.settings_title);
     }
 
 
@@ -90,7 +91,9 @@ public class SettingsFragment extends CustomPreferenceFragment implements Settin
         super.onDestroy();
         SPListView listView = (SPListView) getTargetFragment();
         int requestCode = getTargetRequestCode();
-        listView.onSettingsChanged(RESULT_OK);
+        if (requestCode == SETTINGS_REQUEST_CODE) {
+            listView.onSettingsChanged(RESULT_OK);
+        }
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroy");
     }
 }

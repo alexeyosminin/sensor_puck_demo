@@ -19,8 +19,6 @@ public interface SPListView extends BaseView {
 
     void updateAllItemsRemoved();
 
-    void showError();
-
     void showEnableBluetoothDialog();
 
     void showSettingsFragment();
@@ -28,4 +26,6 @@ public interface SPListView extends BaseView {
     void onSettingsChanged(int resultCode);
 
     void restartWithNewConfig();
+
+    void showAboutScreen();
 }

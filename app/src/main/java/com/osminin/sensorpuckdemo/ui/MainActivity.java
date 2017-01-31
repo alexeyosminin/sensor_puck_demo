@@ -89,12 +89,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onNavigationItemSelected " + item.getTitle());
         int id = item.getItemId();
-
+        getSupportFragmentManager().popBackStack();
         if (id == R.id.nav_settings) {
-            getSupportFragmentManager().popBackStack();
             mHomeView.showSettingsFragment();
         } else if (id == R.id.nav_about) {
-            //TODO: about screen
+            mHomeView.showAboutScreen();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
