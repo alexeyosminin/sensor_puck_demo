@@ -1,7 +1,6 @@
 package com.osminin.sensorpuckdemo.ui.base;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
@@ -55,6 +54,6 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     public abstract String getTitle();
 
     public String getFragmentTag() {
-        return this.getClass().getName().toString();
+        return this.getClass().getName();
     }
 }

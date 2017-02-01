@@ -2,6 +2,7 @@ package com.osminin.sensorpuckdemo.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -260,7 +261,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
     }
 
     public SignalStrength getSignalStrength() {
-        SignalStrength signalStrength = SignalStrength.MEDIUM;
+        SignalStrength signalStrength;
         if (getRssi() > -30) {
             signalStrength = SignalStrength.VERY_HIGH;
         } else if (getRssi() > -40) {
@@ -276,7 +277,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
     }
 
     public BatteryLevel getBatteryLevel() {
-        BatteryLevel level = BatteryLevel.MEDIUM;
+        BatteryLevel level;
         if (getBattery() > 2.9) {
             level = BatteryLevel.VERY_GOOD;
         } else if (getBattery() > 2.8) {
@@ -298,8 +299,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
 
         SensorPuckModel that = (SensorPuckModel) o;
 
-        if (!getAddress().equals(that.getAddress())) return false;
-        return getName().equals(that.getName());
+        return getAddress().equals(that.getAddress()) && getName().equals(that.getName());
 
     }
 
@@ -347,7 +347,7 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
     }
 
     @Override
-    public int compareTo(SensorPuckModel model) {
+    public int compareTo(@NonNull SensorPuckModel model) {
         return mAddress.compareTo(model.getAddress());
     }
 

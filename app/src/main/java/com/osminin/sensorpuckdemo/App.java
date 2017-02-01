@@ -10,7 +10,7 @@ import android.content.Context;
 public class App extends Application {
     private AppComponent component;
 
-    protected AppModule getApplicationModule() {
+    private AppModule getApplicationModule() {
         return new AppModule(this);
     }
 

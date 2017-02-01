@@ -5,7 +5,6 @@ import android.util.Log;
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
-import com.osminin.sensorpuckdemo.presentation.interfaces.BasePresenter;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPDetailsView;
 
@@ -54,8 +53,8 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "startReceivingUpdates");
         mSubscription = mScanner
                 .startObserve()
-                .filter(sensorPuckModel -> sensorPuckModel.equals(mModel))
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
+                .filter(sensorPuckModel -> sensorPuckModel.equals(mModel))
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }

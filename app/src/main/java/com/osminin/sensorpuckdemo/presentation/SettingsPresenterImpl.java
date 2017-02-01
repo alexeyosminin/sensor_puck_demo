@@ -14,7 +14,7 @@ import javax.inject.Inject;
 
 public class SettingsPresenterImpl implements SettingsPresenter {
 
-    private SharedPreferences mSharedPreferences;
+    private final SharedPreferences mSharedPreferences;
     private SettingsView mView;
 
     @Inject

@@ -4,7 +4,6 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
-import com.osminin.sensorpuckdemo.exceptions.BleNotEnabledException;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.model.UiSpModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
@@ -32,7 +31,7 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     private final SPScannerInterface mScanner;
     private SPListView mView;
     private Subscription mSubscription;
-    private LinkedList<SensorPuckModel> mSpList;
+    private final LinkedList<SensorPuckModel> mSpList;
 
     @Inject
     public SPListPresenterImpl(SPScannerInterface scannerInterface) {
@@ -56,8 +55,8 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
         }
         mSubscription = mScanner
                 .startObserve()
-                .map(spModel -> uiMapper(spModel))
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
+                .map(this::uiMapper)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }

@@ -6,11 +6,8 @@ import android.util.Log;
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-
-import static android.R.attr.x;
 
 /**
  * Created by osminin on 17.11.2016.
@@ -76,6 +73,7 @@ final class SensorPuckParser {
         spModel.setName(defaultName(spModel.getAddress()));
         spModel.setRssi(result.getRssi());
         spModel.setTimestamp(System.currentTimeMillis());
+        //noinspection StatementWithEmptyBody
         if (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_OLD) {
             // If its an old style advertisement
             //TODO:

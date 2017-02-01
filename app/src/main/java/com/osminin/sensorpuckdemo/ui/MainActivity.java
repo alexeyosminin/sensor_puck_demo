@@ -1,8 +1,7 @@
 package com.osminin.sensorpuckdemo.ui;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -14,7 +13,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.App;
@@ -28,9 +26,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-
-import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
-import static com.osminin.sensorpuckdemo.Constants.SETTINGS_REQUEST_CODE;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, FragmentManager.OnBackStackChangedListener {
@@ -86,7 +81,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onNavigationItemSelected " + item.getTitle());
         int id = item.getItemId();
         getSupportFragmentManager().popBackStack();
@@ -128,28 +123,11 @@ public class MainActivity extends AppCompatActivity
         showHomeScreen();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "onActivityResult");
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == SETTINGS_REQUEST_CODE && resultCode == RESULT_OK) {
-            restartActivity();
-        }
-    }
-
     private void setBurgerButtonState() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "setBurgerButtonState");
         int count = getSupportFragmentManager().getBackStackEntryCount();
         mActionBarDrawerToggle.setDrawerIndicatorEnabled(count == 0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(count > 0);
         mActionBarDrawerToggle.syncState();
-    }
-
-    private void restartActivity() {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "restartActivity");
-        App.clearAppComponent(this);
-        Handler handler = new Handler();
-        //let activity be resumed before recreating
-        handler.post(() -> recreate());
     }
 }

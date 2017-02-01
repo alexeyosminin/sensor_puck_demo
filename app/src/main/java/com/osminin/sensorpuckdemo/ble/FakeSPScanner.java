@@ -14,13 +14,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action0;
-import rx.functions.Func1;
 import rx.schedulers.Schedulers;
-import rx.subjects.PublishSubject;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 
@@ -32,8 +26,8 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 public final class FakeSPScanner implements SPScannerInterface {
     private static final String TAG = FakeSPScanner.class.getSimpleName();
     private static final long BACKPRESSURE_BUFFER_CAPACITY = 100000;
-    private Observable<Long> mIntervalProducer;
-    private int mSPCount;
+    private final Observable<Long> mIntervalProducer;
+    private final int mSPCount;
     private List<String> mMacAddress;
 
     @Inject
@@ -48,7 +42,7 @@ public final class FakeSPScanner implements SPScannerInterface {
     public Observable<SensorPuckModel> startObserve() {
         return mIntervalProducer
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
-                .doOnSubscribe(() -> generateMacAddresses())
+                .doOnSubscribe(this::generateMacAddresses)
                 .subscribeOn(Schedulers.computation())
                 .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
                 .observeOn(Schedulers.computation());

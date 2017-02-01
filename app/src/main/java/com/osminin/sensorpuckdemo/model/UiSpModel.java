@@ -13,27 +13,24 @@ public class UiSpModel {
         return mModel;
     }
 
-    public UiSpModel setModel(SensorPuckModel model) {
+    public void setModel(SensorPuckModel model) {
         this.mModel = model;
-        return this;
     }
 
     public int getIndex() {
         return mIndex;
     }
 
-    public UiSpModel setIndex(int index) {
+    public void setIndex(int index) {
         this.mIndex = index;
-        return this;
     }
 
     public UiCommand getCommand() {
         return mCommand;
     }
 
-    public UiSpModel setCommand(UiCommand command) {
+    public void setCommand(UiCommand command) {
         this.mCommand = command;
-        return this;
     }
 
     public enum UiCommand {
