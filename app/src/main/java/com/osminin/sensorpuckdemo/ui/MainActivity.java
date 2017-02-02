@@ -22,6 +22,7 @@ import com.osminin.sensorpuckdemo.ui.fragments.SPListFragment;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -100,14 +101,16 @@ public class MainActivity extends AppCompatActivity
     public void onBackStackChanged() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onBackStackChanged");
         FragmentManager fragmentManager = getSupportFragmentManager();
-        List<Fragment> fragments = new ArrayList<>();
+        LinkedList<Fragment> fragments = new LinkedList<>();
         for (Fragment fragment : fragmentManager.getFragments()) {
             if (fragment != null) {
                 fragments.add(fragment);
             }
         }
         int size = fragments.size();
-        BaseFragment lastFragment = (BaseFragment) fragments.get(size - 1);
+        boolean isReverse = fragments.size() != 0 && !fragments.get(0).equals(mHomeView);
+        int lastFragmentIndex = isReverse ? 0 : size - 1;
+        BaseFragment lastFragment = (BaseFragment) fragments.get(lastFragmentIndex);
         if (lastFragment != null) {
             mToolbar.setTitle(lastFragment.getTitle());
         } else {

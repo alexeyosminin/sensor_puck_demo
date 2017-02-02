@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.View;
 
 import com.osminin.sensorpuckdemo.R;
+import com.osminin.sensorpuckdemo.error.SPError;
 
 import butterknife.ButterKnife;
 import butterknife.Unbinder;
@@ -43,11 +44,24 @@ public abstract class BaseFragment extends Fragment implements BaseView {
     }
 
     @Override
-    public void showError() {
+    public void showError(SPError error) {
         if (mSnackbar != null && mSnackbar.isShown()) {
             mSnackbar.dismiss();
         }
-        mSnackbar = Snackbar.make(mCoordinatorLayout, "Connection lost", Snackbar.LENGTH_LONG);
+        int resId = 0;
+        switch (error) {
+            case CONNECTION_LOST:
+                resId = R.string.error_connection_lost;
+                break;
+            case BLE_NOT_AVAILABLE:
+                resId = R.string.error_ble_not_available;
+                break;
+            case COMMON_ERROR:
+                resId = R.string.error_common;
+                break;
+        }
+        String errorMessage = getString(resId);
+        mSnackbar = Snackbar.make(mCoordinatorLayout, errorMessage, Snackbar.LENGTH_LONG);
         mSnackbar.show();
     }
 

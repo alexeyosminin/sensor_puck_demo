@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
+import com.osminin.sensorpuckdemo.error.SPError;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.model.UiSpModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
@@ -153,12 +154,13 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     private void handleBleException(BleScanException e) {
         switch (e.getReason()) {
             case BLUETOOTH_CANNOT_START:
+                mView.showError(SPError.COMMON_ERROR);
                 break;
             case BLUETOOTH_DISABLED:
                 mView.showEnableBluetoothDialog();
                 break;
             case BLUETOOTH_NOT_AVAILABLE:
-                //TODO: show appropriate error
+                mView.showError(SPError.BLE_NOT_AVAILABLE);
                 break;
             case LOCATION_PERMISSION_MISSING:
                 //TODO: show premisson request dialog
@@ -173,7 +175,7 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
         if (mSpList.size() != 0) {
             mSpList.clear();
             mView.updateAllItemsRemoved();
-            mView.showError();
+            mView.showError(SPError.CONNECTION_LOST);
         }
         startScan();
     }

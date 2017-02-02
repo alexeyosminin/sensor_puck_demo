@@ -4,6 +4,7 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
+import com.osminin.sensorpuckdemo.error.SPError;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPDetailsPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPDetailsView;
@@ -74,7 +75,7 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
 
     @Override
     public void onError(Throwable e) {
-        mView.showError();
+        mView.showError(SPError.CONNECTION_LOST);
         FirebaseCrash.logcat(Log.ERROR, TAG, "onError");
         FirebaseCrash.report(e);
     }

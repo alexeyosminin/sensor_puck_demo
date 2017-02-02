@@ -10,6 +10,4 @@ import com.osminin.sensorpuckdemo.ui.base.BaseView;
 public interface SPDetailsView extends BaseView {
 
     void update(SensorPuckModel model);
-
-    void showError();
 }

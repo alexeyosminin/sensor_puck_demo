@@ -224,7 +224,8 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
                 getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();
         transaction.add(R.id.content_main, fragment);
-        transaction.addToBackStack(fragment.getFragmentTag());
+        String tag = fragment.getFragmentTag();
+        transaction.addToBackStack(tag);
         transaction.commit();
     }
 

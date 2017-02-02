@@ -24,4 +24,8 @@
     <string name="settings_fake_count_label">Number of fake sensor pucks</string>
     <string name="settings_fake_count_key">settings_fake_count_key</string>
 
+    <string name="error_connection_lost">Connection lost</string>
+    <string name="error_ble_not_available">Bluetooth is not available</string>
+    <string name="error_common">Common error</string>
+
 </resources>
