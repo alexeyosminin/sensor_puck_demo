@@ -8,6 +8,7 @@ import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.model.UiSpModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
+import com.polidea.rxandroidble.exceptions.BleScanException;
 
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,11 @@ import rx.android.schedulers.AndroidSchedulers;
 
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 import static com.osminin.sensorpuckdemo.model.UiSpModel.UiCommand.ADD_NEW;
+import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_CANNOT_START;
+import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_DISABLED;
+import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_NOT_AVAILABLE;
+import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_PERMISSION_MISSING;
+import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_SERVICES_DISABLED;
 
 /**
  * Created by osminin on 08.11.2016.
@@ -49,10 +55,6 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     @Override
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
-        if (!mScanner.isEnabled()) {
-            mView.showEnableBluetoothDialog();
-            return;
-        }
         mSubscription = mScanner
                 .startObserve()
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
@@ -68,12 +70,6 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
             mSubscription.unsubscribe();
         }
         mSpList.clear();
-    }
-
-    @Override
-    public void destroy() {
-        FirebaseCrash.logcat(Log.DEBUG, TAG, "destroy()");
-        mScanner.stopObserve();
     }
 
     @Override
@@ -101,8 +97,11 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
 
     @Override
     public void onError(Throwable e) {
-        if (TimeoutException.class.getName().equals(e.getClass().getName())) {
+        if (TimeoutException.class.equals(e.getClass())) {
             restartAfterTimeout();
+        } else if (BleScanException.class.equals(e.getClass())) {
+            BleScanException bleScanException = (BleScanException) e;
+            handleBleException(bleScanException);
         } else {
             FirebaseCrash.logcat(Log.ERROR, TAG, "onError()");
             FirebaseCrash.report(e);
@@ -149,6 +148,25 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
             mSpList.add(result.getIndex(), result.getModel());
         }
         return result;
+    }
+
+    private void handleBleException(BleScanException e) {
+        switch (e.getReason()) {
+            case BLUETOOTH_CANNOT_START:
+                break;
+            case BLUETOOTH_DISABLED:
+                mView.showEnableBluetoothDialog();
+                break;
+            case BLUETOOTH_NOT_AVAILABLE:
+                //TODO: show appropriate error
+                break;
+            case LOCATION_PERMISSION_MISSING:
+                //TODO: show premisson request dialog
+                break;
+            case LOCATION_SERVICES_DISABLED:
+                //TODO: show enable location services dialog
+                break;
+        }
     }
 
     private void restartAfterTimeout() {

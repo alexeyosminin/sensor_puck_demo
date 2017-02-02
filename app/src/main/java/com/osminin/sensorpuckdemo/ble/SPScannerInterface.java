@@ -10,6 +10,4 @@ import rx.Observable;
 
 public interface SPScannerInterface {
     Observable<SensorPuckModel> startObserve();
-    void stopObserve();
-    boolean isEnabled();
 }

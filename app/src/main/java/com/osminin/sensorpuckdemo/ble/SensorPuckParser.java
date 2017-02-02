@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
+import com.polidea.rxandroidble.RxBleScanResult;
 
 import java.util.List;
 import java.util.Random;
@@ -55,21 +56,21 @@ final class SensorPuckParser {
 
     private static final String TAG = SensorPuckParser.class.getSimpleName();
 
-    static boolean isSensorPuckRecord(ScanResult result) {
-        byte[] data = result.getScanRecord().getBytes();
+    static boolean isSensorPuckRecord(RxBleScanResult result) {
+        byte[] data = result.getScanRecord();
         boolean res = (data[4] == (-1))
                 && ((data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_OLD)
                 || (data[ADVERTISEMENT_STYLE_INDEX] == ADVERTISEMENT_NEW))
                 && (data[6] == 0x12);
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "isSensorPuckRecord: "
-                + result.getDevice().getAddress() + " - " + res);
+                + result.getBleDevice().getMacAddress() + " - " + res);
         return res;
     }
 
-    static SensorPuckModel parse(ScanResult result) {
-        byte[] data = result.getScanRecord().getBytes();
+    static SensorPuckModel parse(RxBleScanResult result) {
+        byte[] data = result.getScanRecord();
         SensorPuckModel spModel = new SensorPuckModel();
-        spModel.setAddress(result.getDevice().getAddress());
+        spModel.setAddress(result.getBleDevice().getMacAddress());
         spModel.setName(defaultName(spModel.getAddress()));
         spModel.setRssi(result.getRssi());
         spModel.setTimestamp(System.currentTimeMillis());

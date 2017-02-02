@@ -115,7 +115,6 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     public void onDestroy() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroy");
         super.onDestroy();
-        mPresenter.destroy();
         mAdapterSubscription.unsubscribe();
     }
 

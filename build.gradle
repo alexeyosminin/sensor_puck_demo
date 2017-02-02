@@ -3,11 +3,13 @@
 buildscript {
     repositories {
         jcenter()
+        mavenCentral()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.2.3'
         classpath 'com.google.guava:guava:19.0'
         classpath 'com.google.gms:google-services:3.0.0'
+        classpath 'me.tatarka:gradle-retrolambda:3.3.1'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }
@@ -51,5 +53,8 @@ ext.deps = [
 
         //Firebase
         firebasecore: 'com.google.firebase:firebase-core:10.0.1',
-        firebasecrash: 'com.google.firebase:firebase-crash:10.0.1'
+        firebasecrash: 'com.google.firebase:firebase-crash:10.0.1',
+
+        //RxAndroidBLE
+        rxble: 'com.polidea.rxandroidble:rxandroidble:1.1.0'
 ]
