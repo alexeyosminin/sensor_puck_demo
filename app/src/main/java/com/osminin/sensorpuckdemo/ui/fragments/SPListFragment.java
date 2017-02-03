@@ -207,7 +207,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void showLocationPermissionDialog() {
-        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+        requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                 REQUEST_LOCATION_PERMISSION);
     }
 
@@ -237,7 +237,8 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+        if (grantResults != null && grantResults.length != 0 &&
+                requestCode == REQUEST_LOCATION_PERMISSION) {
             mPresenter.onScannerFunctionalityEnabled(requestCode,
                     grantResults[0] == PackageManager.PERMISSION_GRANTED);
         }
