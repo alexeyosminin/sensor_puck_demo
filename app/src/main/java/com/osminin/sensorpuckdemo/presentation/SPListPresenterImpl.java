@@ -21,6 +21,8 @@ import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
+import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
+import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_LOCATION;
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 import static com.osminin.sensorpuckdemo.model.UiSpModel.UiCommand.ADD_NEW;
 import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_CANNOT_START;
@@ -74,9 +76,18 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     }
 
     @Override
-    public void onScannerFunctionalityEnabled(boolean isEnabled) {
+    public void onScannerFunctionalityEnabled(int requestCode, boolean isEnabled) {
         if (isEnabled) {
             startScan();
+        } else {
+            switch (requestCode) {
+                case REQUEST_ENABLE_BT:
+                    mView.showError(SPError.BLE_NOT_ENABLED);
+                    break;
+                case REQUEST_ENABLE_LOCATION:
+                    mView.showError(SPError.LOCATION_NOT_ENABLED);
+                    break;
+            }
         }
     }
 
@@ -163,10 +174,10 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
                 mView.showError(SPError.BLE_NOT_AVAILABLE);
                 break;
             case LOCATION_PERMISSION_MISSING:
-                //TODO: show premisson request dialog
+                mView.showLocationPermissionDialog();
                 break;
             case LOCATION_SERVICES_DISABLED:
-                //TODO: show enable location services dialog
+                mView.showEnableLocationDialog();
                 break;
         }
     }

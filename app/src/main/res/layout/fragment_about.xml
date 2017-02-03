@@ -4,5 +4,20 @@
                 android:layout_height="match_parent"
                 android:background="@android:color/background_light"
                 android:clickable="true">
+    <TextView
+        android:id="@+id/about_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="20sp"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:text="@string/about_main_text"/>
+
+    <ImageView
+        android:id="@+id/about_github_link"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/about_text"
+        android:src="@drawable/github_logo"/>
 
 </RelativeLayout>

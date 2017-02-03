@@ -11,4 +11,7 @@ public final class Constants {
 
     public static final int SETTINGS_REQUEST_CODE = 100;
     public static final int REQUEST_ENABLE_BT = 200;
+    public static final int REQUEST_LOCATION_PERMISSION = 300;
+    public static final int REQUEST_ENABLE_LOCATION = 400;
+
 }

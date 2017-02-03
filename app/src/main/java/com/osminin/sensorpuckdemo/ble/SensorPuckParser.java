@@ -115,6 +115,7 @@ final class SensorPuckParser {
         spModel.setAmbientLight(Int16(data[LIGHT_INDEX_LSB], data[LIGHT_INDEX_MSB]) * 7);
         spModel.setUVIndex(Int8(data[UV_INDEX]));
         spModel.setBattery(((float) Int8(data[BATTERY_INDEX])) / 10.0f);
+        spModel.setTimestamp(System.currentTimeMillis());
     }
 
     private static void parseBiometric(SensorPuckModel spModel, byte[] data) {
@@ -123,6 +124,7 @@ final class SensorPuckParser {
         spModel.setSequence(Int8(data[SEQUENCE_INDEX]));
         spModel.setHRMState(Int8(data[HRM_INDEX_LSB]));
         spModel.setHRMRate(Int8(data[HRM_INDEX_MSB]));
+        spModel.setTimestamp(System.currentTimeMillis());
 
         for (int i = 0; i < HRM_SAMPLE_COUNT; i++) {
             spModel.getHRMSample().add(Int16(data[HRM_SAMPLE_COUNT + (i * 2) + SEQUENCE_INDEX],

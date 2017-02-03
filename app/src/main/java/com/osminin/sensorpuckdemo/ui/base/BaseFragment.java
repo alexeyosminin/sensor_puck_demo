@@ -56,6 +56,12 @@ public abstract class BaseFragment extends Fragment implements BaseView {
             case BLE_NOT_AVAILABLE:
                 resId = R.string.error_ble_not_available;
                 break;
+            case LOCATION_NOT_ENABLED:
+                resId = R.string.error_location_not_enabled;
+                break;
+            case BLE_NOT_ENABLED:
+                resId = R.string.error_ble_not_enabled;
+                break;
             case COMMON_ERROR:
                 resId = R.string.error_common;
                 break;
@@ -63,6 +69,10 @@ public abstract class BaseFragment extends Fragment implements BaseView {
         String errorMessage = getString(resId);
         mSnackbar = Snackbar.make(mCoordinatorLayout, errorMessage, Snackbar.LENGTH_LONG);
         mSnackbar.show();
+    }
+
+    protected boolean isErrorShown() {
+        return mSnackbar != null && mSnackbar.isShown();
     }
 
     public abstract String getTitle();

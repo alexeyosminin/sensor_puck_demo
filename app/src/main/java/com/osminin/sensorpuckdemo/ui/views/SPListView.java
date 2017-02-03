@@ -28,4 +28,8 @@ public interface SPListView extends BaseView {
     void restartWithNewConfig();
 
     void showAboutScreen();
+
+    void showLocationPermissionDialog();
+
+    void showEnableLocationDialog();
 }

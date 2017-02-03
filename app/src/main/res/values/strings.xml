@@ -26,6 +26,11 @@
 
     <string name="error_connection_lost">Connection lost</string>
     <string name="error_ble_not_available">Bluetooth is not available</string>
+    <string name="error_ble_not_enabled">Bluetooth is not enabled</string>
+    <string name="error_location_not_enabled">Location service is not enabled</string>
     <string name="error_common">Common error</string>
+
+    <string name="about_main_text">This is the demo application provides functionality to receive the data from Sensor Puck manufactured by Silicon Labs. It also has demo mode where several sensors are generated randomly. You can find source code of this app on Github.</string>
+    <string name="github_link">https://github.com/alexeyosminin/sensor_puck_demo</string>
 
 </resources>

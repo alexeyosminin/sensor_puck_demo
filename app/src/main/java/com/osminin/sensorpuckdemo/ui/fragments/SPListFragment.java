@@ -1,9 +1,16 @@
 package com.osminin.sensorpuckdemo.ui.fragments;
 
+import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.location.LocationManager;
+import android.location.LocationProvider;
 import android.os.Bundle;
+import android.os.Handler;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -42,7 +49,10 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
 import static android.app.Activity.RESULT_OK;
+import static android.content.Context.LOCATION_SERVICE;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
+import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_LOCATION;
+import static com.osminin.sensorpuckdemo.Constants.REQUEST_LOCATION_PERMISSION;
 import static com.osminin.sensorpuckdemo.Constants.SETTINGS_REQUEST_CODE;
 import static com.osminin.sensorpuckdemo.Constants.SP_MODEL_EXTRA;
 
@@ -99,7 +109,9 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     public void onStart() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onStart");
         super.onStart();
-        mPresenter.startScan();
+        if (!isErrorShown()) {
+            mPresenter.startScan();
+        }
     }
 
     @Override
@@ -194,10 +206,40 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
+    public void showLocationPermissionDialog() {
+        requestPermissions(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE},
+                REQUEST_LOCATION_PERMISSION);
+    }
+
+    @Override
+    public void showEnableLocationDialog() {
+        Intent enableBtIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivityForResult(enableBtIntent, REQUEST_ENABLE_LOCATION);
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
         if (requestCode == REQUEST_ENABLE_BT) {
-            mPresenter.onScannerFunctionalityEnabled(resultCode == RESULT_OK);
+            mPresenter.onScannerFunctionalityEnabled(requestCode, resultCode == RESULT_OK);
+        } else if (requestCode == REQUEST_ENABLE_LOCATION){
+            try {
+                int isGpsOff = Settings.Secure.getInt(mContext.getContentResolver(), Settings.Secure.LOCATION_MODE);
+                mPresenter.onScannerFunctionalityEnabled(requestCode, isGpsOff != 0);
+            } catch (Settings.SettingNotFoundException e) {
+                FirebaseCrash.logcat(Log.ERROR, TAG, "onActivityResult");
+                FirebaseCrash.report(e);
+            }
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            mPresenter.onScannerFunctionalityEnabled(requestCode,
+                    grantResults[0] == PackageManager.PERMISSION_GRANTED);
         }
     }
 
