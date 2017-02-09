@@ -1,6 +1,5 @@
 package com.osminin.sensorpuckdemo.ble;
 
-import android.bluetooth.le.ScanResult;
 import android.util.Log;
 
 import com.google.firebase.crash.FirebaseCrash;

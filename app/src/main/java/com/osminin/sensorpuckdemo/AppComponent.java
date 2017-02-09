@@ -20,9 +20,9 @@ import dagger.Component;
 public interface AppComponent {
     MainActivity inject(MainActivity activity);
 
-    SPListFragment inject(SPListFragment fragment);
+    void inject(SPListFragment fragment);
 
-    SPDetailsFragment inject(SPDetailsFragment fragment);
+    void inject(SPDetailsFragment fragment);
 
-    SettingsFragment inject(SettingsFragment fragment);
+    void inject(SettingsFragment fragment);
 }

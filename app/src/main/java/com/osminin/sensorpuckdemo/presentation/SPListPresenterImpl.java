@@ -15,8 +15,6 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import javax.inject.Inject;
-
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -35,14 +33,13 @@ import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_SERV
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>{
+public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel> {
     private static final String TAG = SPListPresenterImpl.class.getSimpleName();
     private final SPScannerInterface mScanner;
     private SPListView mView;
     private Subscription mSubscription;
     private final LinkedList<SensorPuckModel> mSpList;
 
-    @Inject
     public SPListPresenterImpl(SPScannerInterface scannerInterface) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenterImpl()");
         mSpList = new LinkedList<>();
@@ -60,8 +57,8 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
         mSubscription = mScanner
                 .startObserve()
-                .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
                 .map(this::uiMapper)
+                .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }

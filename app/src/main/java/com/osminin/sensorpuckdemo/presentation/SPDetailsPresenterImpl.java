@@ -11,8 +11,6 @@ import com.osminin.sensorpuckdemo.ui.views.SPDetailsView;
 
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
-
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -31,7 +29,6 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
     private SensorPuckModel mModel;
     private Subscription mSubscription;
 
-    @Inject
     public SPDetailsPresenterImpl(SPScannerInterface scanner) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPDetailsPresenterImpl()");
         mScanner = scanner;
