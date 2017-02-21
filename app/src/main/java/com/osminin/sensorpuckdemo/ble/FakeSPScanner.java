@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;
@@ -42,8 +41,7 @@ public final class FakeSPScanner implements SPScannerInterface {
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
                 .doOnSubscribe(this::generateMacAddresses)
                 .subscribeOn(Schedulers.computation())
-                .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress))
-                .observeOn(Schedulers.computation());
+                .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress));
     }
 
     private void generateMacAddresses() {

@@ -7,7 +7,6 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.polidea.rxandroidble.RxBleClient;
 
-import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import rx.Observable;

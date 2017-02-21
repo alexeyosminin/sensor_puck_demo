@@ -21,9 +21,7 @@ import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
 import com.osminin.sensorpuckdemo.ui.fragments.SPListFragment;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

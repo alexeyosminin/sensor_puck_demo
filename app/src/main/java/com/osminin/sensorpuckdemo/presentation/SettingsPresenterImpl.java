@@ -6,8 +6,6 @@ import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SettingsPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SettingsView;
 
-import javax.inject.Inject;
-
 /**
  * Created by osminin on 1/30/2017.
  */
@@ -17,7 +15,6 @@ public class SettingsPresenterImpl implements SettingsPresenter {
     private final SharedPreferences mSharedPreferences;
     private SettingsView mView;
 
-    @Inject
     public SettingsPresenterImpl(SharedPreferences sharedPreferences) {
         mSharedPreferences = sharedPreferences;
     }

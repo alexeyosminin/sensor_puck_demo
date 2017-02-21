@@ -5,10 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
-import android.location.LocationManager;
-import android.location.LocationProvider;
 import android.os.Bundle;
-import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -31,8 +28,8 @@ import com.osminin.sensorpuckdemo.R;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 import com.osminin.sensorpuckdemo.ui.MainActivity;
-import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.osminin.sensorpuckdemo.ui.base.BaseFragment;
+import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -49,7 +46,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import rx.subjects.PublishSubject;
 
 import static android.app.Activity.RESULT_OK;
-import static android.content.Context.LOCATION_SERVICE;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_LOCATION;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_LOCATION_PERMISSION;
