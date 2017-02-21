@@ -17,12 +17,10 @@ import rx.schedulers.Schedulers;
  * Created by osminin on 16.11.2016.
  */
 
-@Singleton
 public final class BleSPScanner implements SPScannerInterface {
     private static final String TAG = BleSPScanner.class.getSimpleName();
     private RxBleClient rxBleClient;
 
-    @Inject
     public BleSPScanner(final Context context) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "BleSPScanner(): ");
         rxBleClient = RxBleClient.create(context);

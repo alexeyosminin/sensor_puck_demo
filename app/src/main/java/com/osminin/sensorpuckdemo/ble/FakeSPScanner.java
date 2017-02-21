@@ -22,7 +22,6 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
  * Created by osminin on 29.11.2016.
  */
 
-@Singleton
 public final class FakeSPScanner implements SPScannerInterface {
     private static final String TAG = FakeSPScanner.class.getSimpleName();
     private static final long BACKPRESSURE_BUFFER_CAPACITY = 100000;
@@ -30,7 +29,6 @@ public final class FakeSPScanner implements SPScannerInterface {
     private final int mSPCount;
     private List<String> mMacAddress;
 
-    @Inject
     public FakeSPScanner(int fakeSPCount) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "FakeSPScanner()");
         mSPCount = fakeSPCount;
