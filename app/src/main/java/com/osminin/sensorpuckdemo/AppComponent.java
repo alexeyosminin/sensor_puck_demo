@@ -13,13 +13,9 @@ import dagger.Component;
  * Created by osminin on 08.11.2016.
  */
 
-@Component(
-        modules = AppModule.class
-)
+@Component(modules = {AppModule.class, BleModule.class})
 @Singleton
 public interface AppComponent {
-    MainActivity inject(MainActivity activity);
-
     void inject(SPListFragment fragment);
 
     void inject(SPDetailsFragment fragment);

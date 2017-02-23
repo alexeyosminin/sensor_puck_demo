@@ -192,6 +192,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void restartWithNewConfig() {
+        mPresenter.stopScan();
         ((MainActivity) mContext).restartConfiguration();
     }
 
