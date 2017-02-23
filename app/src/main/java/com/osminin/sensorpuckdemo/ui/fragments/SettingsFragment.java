@@ -27,7 +27,7 @@ import static com.osminin.sensorpuckdemo.Constants.SETTINGS_REQUEST_CODE;
  * Created by osminin on 30.11.2016.
  */
 
-public class SettingsFragment extends CustomPreferenceFragment implements SettingsView,  SharedPreferences.OnSharedPreferenceChangeListener {
+public class SettingsFragment extends CustomPreferenceFragment implements SettingsView, SharedPreferences.OnSharedPreferenceChangeListener {
     private static final String TAG = SettingsFragment.class.getName();
 
     @Inject

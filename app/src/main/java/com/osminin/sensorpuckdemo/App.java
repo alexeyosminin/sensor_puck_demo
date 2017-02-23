@@ -10,10 +10,6 @@ import android.content.Context;
 public class App extends Application {
     private AppComponent component;
 
-    private AppModule getApplicationModule() {
-        return new AppModule(this);
-    }
-
     public static AppComponent getAppComponent(Context context) {
         App app = (App) context.getApplicationContext();
         if (app.component == null) {
@@ -27,5 +23,9 @@ public class App extends Application {
     public static void clearAppComponent(Context context) {
         App app = (App) context.getApplicationContext();
         app.component = null;
+    }
+
+    private AppModule getApplicationModule() {
+        return new AppModule(this);
     }
 }

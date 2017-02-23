@@ -1,12 +1,9 @@
 package com.osminin.sensorpuckdemo;
 
-import android.bluetooth.BluetoothManager;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
-import com.osminin.sensorpuckdemo.ble.BleSPScanner;
-import com.osminin.sensorpuckdemo.ble.FakeSPScanner;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.presentation.SPDetailsPresenterImpl;
 import com.osminin.sensorpuckdemo.presentation.SPListPresenterImpl;

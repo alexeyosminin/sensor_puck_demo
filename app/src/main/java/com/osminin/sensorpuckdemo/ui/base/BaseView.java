@@ -10,5 +10,6 @@ import com.osminin.sensorpuckdemo.error.SPError;
 
 public interface BaseView {
     Context getContext();
+
     void showError(SPError error);
 }

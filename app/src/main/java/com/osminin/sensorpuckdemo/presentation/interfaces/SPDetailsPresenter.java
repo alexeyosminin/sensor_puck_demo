@@ -9,6 +9,8 @@ import com.osminin.sensorpuckdemo.ui.views.SPDetailsView;
 
 public interface SPDetailsPresenter extends BasePresenter<SPDetailsView> {
     void setModel(SensorPuckModel model);
+
     void startReceivingUpdates();
+
     void stopReceivingUpdates();
 }

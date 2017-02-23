@@ -9,8 +9,12 @@ import com.osminin.sensorpuckdemo.ui.views.SPListView;
 
 public interface SPListPresenter extends BasePresenter<SPListView> {
     void startScan();
+
     void stopScan();
+
     void onDeviceSelected(SensorPuckModel model);
+
     void onScannerFunctionalityEnabled(int requestCode, boolean isEnabled);
+
     void onSettingsChanged();
 }

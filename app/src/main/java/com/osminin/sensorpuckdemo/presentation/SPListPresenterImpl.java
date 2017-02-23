@@ -36,9 +36,9 @@ import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_SERV
 public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel> {
     private static final String TAG = SPListPresenterImpl.class.getSimpleName();
     private final SPScannerInterface mScanner;
+    private final LinkedList<SensorPuckModel> mSpList;
     private SPListView mView;
     private Subscription mSubscription;
-    private final LinkedList<SensorPuckModel> mSpList;
 
     public SPListPresenterImpl(SPScannerInterface scannerInterface) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenterImpl()");

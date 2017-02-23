@@ -80,9 +80,6 @@ public final class SPDetailsPresenterImpl implements SPDetailsPresenter, Observe
     @Override
     public void onNext(SensorPuckModel spModel) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "onNext: " + spModel.getName());
-        if (spModel.getHRMSample().size() > 0) {
-            spModel.setHRMPrevSample(spModel.getHRMSample().get(spModel.getHRMSample().size() - 1));
-        }
         mModel = spModel;
         mView.update(spModel);
     }
