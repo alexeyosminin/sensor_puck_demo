@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import javax.inject.Singleton;
-
 import rx.Observable;
 import rx.schedulers.Schedulers;
 

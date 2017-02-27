@@ -192,6 +192,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void restartWithNewConfig() {
+        mPresenter.stopScan();
         ((MainActivity) mContext).restartConfiguration();
     }
 
@@ -218,7 +219,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
         if (requestCode == REQUEST_ENABLE_BT) {
             mPresenter.onScannerFunctionalityEnabled(requestCode, resultCode == RESULT_OK);
-        } else if (requestCode == REQUEST_ENABLE_LOCATION){
+        } else if (requestCode == REQUEST_ENABLE_LOCATION) {
             try {
                 int isGpsOff = Settings.Secure.getInt(mContext.getContentResolver(), Settings.Secure.LOCATION_MODE);
                 mPresenter.onScannerFunctionalityEnabled(requestCode, isGpsOff != 0);

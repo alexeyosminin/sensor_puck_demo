@@ -4,9 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Created by osminin on 09.11.2016.
  */
@@ -36,15 +33,6 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
     private float mBattery;
     private int mHRMState;
     private int mHRMRate;
-    private List<Integer> mHRMSample;
-    private int mHRMPrevSample;
-    private int mPrevSequence;
-    private int mRecvCount;
-    private int mPrevCount;
-    private int mUniqueCount;
-    private int mLostAdv;
-    private int mLostCount;
-    private int mIdleCount;
     private int mRssi;
     private long mTimestamp;
 
@@ -63,20 +51,6 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         mBattery = in.readFloat();
         mHRMState = in.readInt();
         mHRMRate = in.readInt();
-        if (in.readByte() == 0x01) {
-            mHRMSample = new ArrayList<>();
-            in.readList(mHRMSample, Integer.class.getClassLoader());
-        } else {
-            mHRMSample = null;
-        }
-        mHRMPrevSample = in.readInt();
-        mPrevSequence = in.readInt();
-        mRecvCount = in.readInt();
-        mPrevCount = in.readInt();
-        mUniqueCount = in.readInt();
-        mLostAdv = in.readInt();
-        mLostCount = in.readInt();
-        mIdleCount = in.readInt();
         mRssi = in.readInt();
         mTimestamp = in.readLong();
     }
@@ -169,81 +143,6 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         mHRMRate = HRMRate;
     }
 
-    public List<Integer> getHRMSample() {
-        if (mHRMSample == null) {
-            mHRMSample = new ArrayList<>();
-        }
-        return mHRMSample;
-    }
-
-    public void setHRMSample(List<Integer> HRMSample) {
-        mHRMSample = HRMSample;
-    }
-
-    public int getHRMPrevSample() {
-        return mHRMPrevSample;
-    }
-
-    public void setHRMPrevSample(int HRMPrevSample) {
-        mHRMPrevSample = HRMPrevSample;
-    }
-
-    public int getPrevSequence() {
-        return mPrevSequence;
-    }
-
-    public void setPrevSequence(int prevSequence) {
-        mPrevSequence = prevSequence;
-    }
-
-    public int getRecvCount() {
-        return mRecvCount;
-    }
-
-    public void setRecvCount(int recvCount) {
-        mRecvCount = recvCount;
-    }
-
-    public int getPrevCount() {
-        return mPrevCount;
-    }
-
-    public void setPrevCount(int prevCount) {
-        mPrevCount = prevCount;
-    }
-
-    public int getUniqueCount() {
-        return mUniqueCount;
-    }
-
-    public void setUniqueCount(int uniqueCount) {
-        mUniqueCount = uniqueCount;
-    }
-
-    public int getLostAdv() {
-        return mLostAdv;
-    }
-
-    public void setLostAdv(int lostAdv) {
-        mLostAdv = lostAdv;
-    }
-
-    public int getLostCount() {
-        return mLostCount;
-    }
-
-    public void setLostCount(int lostCount) {
-        mLostCount = lostCount;
-    }
-
-    public int getIdleCount() {
-        return mIdleCount;
-    }
-
-    public void setIdleCount(int idleCount) {
-        mIdleCount = idleCount;
-    }
-
     public int getRssi() {
         return mRssi;
     }
@@ -328,20 +227,6 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
         dest.writeFloat(mBattery);
         dest.writeInt(mHRMState);
         dest.writeInt(mHRMRate);
-        if (mHRMSample == null) {
-            dest.writeByte((byte) (0x00));
-        } else {
-            dest.writeByte((byte) (0x01));
-            dest.writeList(mHRMSample);
-        }
-        dest.writeInt(mHRMPrevSample);
-        dest.writeInt(mPrevSequence);
-        dest.writeInt(mRecvCount);
-        dest.writeInt(mPrevCount);
-        dest.writeInt(mUniqueCount);
-        dest.writeInt(mLostAdv);
-        dest.writeInt(mLostCount);
-        dest.writeInt(mIdleCount);
         dest.writeInt(mRssi);
         dest.writeLong(mTimestamp);
     }
@@ -357,7 +242,6 @@ public final class SensorPuckModel implements Parcelable, Comparable<SensorPuckM
                 "mHRMRate=" + mHRMRate +
                 ", mHRMState=" + mHRMState +
                 ", mRssi=" + mRssi +
-                ", mHRMSample=" + mHRMSample +
                 ", mBattery=" + mBattery +
                 ", mUVIndex=" + mUVIndex +
                 ", mAmbientLight=" + mAmbientLight +

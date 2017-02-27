@@ -124,11 +124,6 @@ final class SensorPuckParser {
         spModel.setHRMState(Int8(data[HRM_INDEX_LSB]));
         spModel.setHRMRate(Int8(data[HRM_INDEX_MSB]));
         spModel.setTimestamp(System.currentTimeMillis());
-
-        for (int i = 0; i < HRM_SAMPLE_COUNT; i++) {
-            spModel.getHRMSample().add(Int16(data[HRM_SAMPLE_COUNT + (i * 2) + SEQUENCE_INDEX],
-                    data[HRM_SAMPLE_COUNT + 1 + (i * 2) + SEQUENCE_INDEX]));
-        }
     }
 
     private static int Int8(byte data) {
