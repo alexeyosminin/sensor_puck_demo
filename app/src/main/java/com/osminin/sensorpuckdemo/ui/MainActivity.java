@@ -39,7 +39,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onCreate");
-        App.getAppComponent(this).inject(this);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -120,7 +119,6 @@ public class MainActivity extends AppCompatActivity
 
     public void restartConfiguration() {
         App.clearAppComponent(this);
-        App.getAppComponent(this).inject(this);
         showHomeScreen();
     }
 
