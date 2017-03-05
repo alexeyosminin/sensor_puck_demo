@@ -74,13 +74,13 @@ public final class SPDetailsFragment extends BaseFragment implements SPDetailsVi
         mUnbinder = ButterKnife.bind(this, view);
         mModel = getArguments().getParcelable(SP_MODEL_EXTRA);
         mPresenter.setModel(mModel);
-        mPresenter.setView(this);
+        mPresenter.bind(this);
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        mPresenter.setView(null);
+        mPresenter.bind(null);
     }
 
     @Override

@@ -20,7 +20,7 @@ public class SettingsPresenterImpl implements SettingsPresenter {
     }
 
     @Override
-    public void setView(SettingsView view) {
+    public void bind(SettingsView view) {
         mView = view;
     }
 

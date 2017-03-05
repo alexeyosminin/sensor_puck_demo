@@ -47,8 +47,8 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     }
 
     @Override
-    public void setView(SPListView view) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "setView()");
+    public void bind(SPListView view) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "bind()");
         mView = view;
     }
 

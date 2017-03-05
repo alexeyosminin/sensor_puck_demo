@@ -91,14 +91,14 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
-        mPresenter.setView(this);
+        mPresenter.bind(this);
     }
 
     @Override
     public void onDestroyView() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroyView");
         super.onDestroyView();
-        mPresenter.setView(null);
+        mPresenter.bind(null);
     }
 
     @Override
