@@ -3,6 +3,8 @@ package com.osminin.sensorpuckdemo.ui.views;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
 import com.osminin.sensorpuckdemo.ui.base.BaseView;
 
+import java.util.List;
+
 /**
  * Created by osminin on 08.11.2016.
  */
@@ -32,4 +34,6 @@ public interface SPListView extends BaseView {
     void showLocationPermissionDialog();
 
     void showEnableLocationDialog();
+
+    List<SensorPuckModel> getCurrentDevices();
 }

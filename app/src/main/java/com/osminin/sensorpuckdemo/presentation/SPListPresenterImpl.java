@@ -12,10 +12,13 @@ import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import rx.Observer;
 import rx.Subscriber;
+import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
@@ -32,15 +35,14 @@ import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_SERV
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenterImpl extends Subscriber<UiSpModel> implements SPListPresenter {
+public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel> {
     private static final String TAG = SPListPresenterImpl.class.getSimpleName();
     private final SPScannerInterface mScanner;
-    private final LinkedList<SensorPuckModel> mSpList;
     private SPListView mView;
+    private Subscription mSubscription;
 
     public SPListPresenterImpl(SPScannerInterface scannerInterface) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenterImpl()");
-        mSpList = new LinkedList<>();
         mScanner = scannerInterface;
     }
 
@@ -53,7 +55,7 @@ public class SPListPresenterImpl extends Subscriber<UiSpModel> implements SPList
     @Override
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
-        mScanner.startObserve()
+        mSubscription = mScanner.startObserve()
                 .map(this::uiMapper)
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -63,10 +65,9 @@ public class SPListPresenterImpl extends Subscriber<UiSpModel> implements SPList
     @Override
     public void stopScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
-        if (!isUnsubscribed()) {
-            unsubscribe();
+        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
+            mSubscription.unsubscribe();
         }
-        mSpList.clear();
     }
 
     @Override
@@ -130,28 +131,25 @@ public class SPListPresenterImpl extends Subscriber<UiSpModel> implements SPList
     }
 
     private UiSpModel uiMapper(SensorPuckModel spModel) {
-        int index = mSpList.indexOf(spModel);
+        List<SensorPuckModel> spList = mView.getCurrentDevices();
+        int index = spList.indexOf(spModel);
         UiSpModel result = new UiSpModel();
         result.setModel(spModel);
         result.setIndex(index);
         if (index != -1) {
             // spModel is present in mSpList so it should be updated or removed if
             // its discovery time is more than SP_DISCOVERY_TIMEOUT
-            SensorPuckModel cur = mSpList.get(index);
+            SensorPuckModel cur = spList.get(index);
             long currentTime = System.currentTimeMillis();
             if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
                 result.setCommand(UiSpModel.UiCommand.REMOVE);
-                mSpList.remove(result.getIndex());
             } else {
                 result.setCommand(UiSpModel.UiCommand.REPLACE);
-                mSpList.remove(result.getIndex());
-                mSpList.add(result.getIndex(), result.getModel());
             }
         } else {
             // it means that we have new one sp device so it should be just added
             result.setCommand(ADD_NEW);
-            result.setIndex(mSpList.size());
-            mSpList.add(result.getIndex(), result.getModel());
+            result.setIndex(spList.size());
         }
         return result;
     }
@@ -177,8 +175,8 @@ public class SPListPresenterImpl extends Subscriber<UiSpModel> implements SPList
     }
 
     private void restartAfterTimeout() {
-        if (mSpList.size() != 0) {
-            mSpList.clear();
+        List<SensorPuckModel> spList = mView.getCurrentDevices();
+        if (spList.size() != 0) {
             mView.updateAllItemsRemoved();
             mView.showError(SPError.CONNECTION_LOST);
         }

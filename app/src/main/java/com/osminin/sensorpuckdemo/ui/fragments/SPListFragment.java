@@ -215,6 +215,11 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
+    public List<SensorPuckModel> getCurrentDevices() {
+        return mDevices;
+    }
+
+    @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableBluetoothDialog");
         if (requestCode == REQUEST_ENABLE_BT) {
