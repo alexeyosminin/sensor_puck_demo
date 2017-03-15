@@ -41,6 +41,7 @@ dependencies {
 
     // Dagger
     compile deps.dagger
+    compile deps.daggerandroid
     annotationProcessor  deps.daggercompiler
 
     //CardView

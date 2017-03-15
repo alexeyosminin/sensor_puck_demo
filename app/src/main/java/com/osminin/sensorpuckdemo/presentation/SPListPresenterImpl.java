@@ -15,8 +15,7 @@ import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import rx.Observer;
-import rx.Subscription;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
@@ -33,12 +32,11 @@ import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_SERV
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel> {
+public class SPListPresenterImpl extends Subscriber<UiSpModel> implements SPListPresenter {
     private static final String TAG = SPListPresenterImpl.class.getSimpleName();
     private final SPScannerInterface mScanner;
     private final LinkedList<SensorPuckModel> mSpList;
     private SPListView mView;
-    private Subscription mSubscription;
 
     public SPListPresenterImpl(SPScannerInterface scannerInterface) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenterImpl()");
@@ -55,8 +53,7 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     @Override
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
-        mSubscription = mScanner
-                .startObserve()
+        mScanner.startObserve()
                 .map(this::uiMapper)
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
@@ -66,8 +63,8 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     @Override
     public void stopScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
+        if (!isUnsubscribed()) {
+            unsubscribe();
         }
         mSpList.clear();
     }
