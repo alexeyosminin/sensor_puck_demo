@@ -11,13 +11,11 @@ import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import rx.Observer;
-import rx.Subscriber;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
 
@@ -56,6 +54,7 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
         mSubscription = mScanner.startObserve()
+                .filter(spModel -> spModel != null)
                 .map(this::uiMapper)
                 .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
                 .observeOn(AndroidSchedulers.mainThread())
