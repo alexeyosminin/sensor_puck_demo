@@ -21,7 +21,7 @@ import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
 
 public final class FakeSPScanner implements SPScannerInterface {
     private static final String TAG = FakeSPScanner.class.getSimpleName();
-    private static final long BACKPRESSURE_BUFFER_CAPACITY = 100000;
+    private static final long BACKPRESSURE_BUFFER_CAPACITY = 1000000;
     private final Observable<Long> mIntervalProducer;
     private final int mSPCount;
     private List<String> mMacAddress;
@@ -37,6 +37,7 @@ public final class FakeSPScanner implements SPScannerInterface {
     public Observable<SensorPuckModel> startObserve() {
         return mIntervalProducer
                 .onBackpressureBuffer(BACKPRESSURE_BUFFER_CAPACITY)
+                .onBackpressureDrop()
                 .doOnSubscribe(this::generateMacAddresses)
                 .subscribeOn(Schedulers.computation())
                 .map(rndNumber -> SensorPuckParser.generateRandomModel((int) (rndNumber % mSPCount), mMacAddress));

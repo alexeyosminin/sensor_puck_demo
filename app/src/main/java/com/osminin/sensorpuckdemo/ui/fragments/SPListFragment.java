@@ -162,6 +162,12 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     @Override
+    public void updateItems(List<SensorPuckModel> list) {
+        mDevices = list;
+        mAdapter.notifyDataSetChanged();
+    }
+
+    @Override
     public void updateAllItemsRemoved() {
         int count = mDevices.size();
         mDevices.clear();

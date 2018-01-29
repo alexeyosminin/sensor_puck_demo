@@ -12,11 +12,12 @@ import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-import rx.Observer;
-import rx.Subscription;
+import rx.Observable;
+import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
@@ -33,16 +34,13 @@ import static com.polidea.rxandroidble.exceptions.BleScanException.LOCATION_SERV
  * Created by osminin on 08.11.2016.
  */
 
-public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel> {
+public class SPListPresenterImpl extends Subscriber<List<SensorPuckModel>> implements SPListPresenter {
     private static final String TAG = SPListPresenterImpl.class.getSimpleName();
     private final SPScannerInterface mScanner;
-    private final LinkedList<SensorPuckModel> mSpList;
     private SPListView mView;
-    private Subscription mSubscription;
 
     public SPListPresenterImpl(SPScannerInterface scannerInterface) {
         FirebaseCrash.logcat(Log.VERBOSE, TAG, "SPListPresenterImpl()");
-        mSpList = new LinkedList<>();
         mScanner = scannerInterface;
     }
 
@@ -55,10 +53,11 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     @Override
     public void startScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "startScan()");
-        mSubscription = mScanner
-                .startObserve()
-                .map(this::uiMapper)
-                .timeout(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
+        mScanner.startObserve()
+                .filter(spModel -> spModel != null)
+                .buffer(SP_DISCOVERY_TIMEOUT, TimeUnit.MILLISECONDS)
+                .flatMap(list -> Observable.from(list).distinct()
+                        .toSortedList())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(this);
     }
@@ -66,10 +65,9 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
     @Override
     public void stopScan() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "stopScan()");
-        if (mSubscription != null && !mSubscription.isUnsubscribed()) {
-            mSubscription.unsubscribe();
+        if (!isUnsubscribed()) {
+            unsubscribe();
         }
-        mSpList.clear();
     }
 
     @Override
@@ -106,57 +104,19 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
 
     @Override
     public void onError(Throwable e) {
-        if (TimeoutException.class.equals(e.getClass())) {
-            restartAfterTimeout();
-        } else if (BleScanException.class.equals(e.getClass())) {
+        if (BleScanException.class.equals(e.getClass())) {
             BleScanException bleScanException = (BleScanException) e;
             handleBleException(bleScanException);
         } else {
+            mView.showError(SPError.COMMON_ERROR);
             FirebaseCrash.logcat(Log.ERROR, TAG, "onError()");
             FirebaseCrash.report(e);
         }
     }
 
     @Override
-    public void onNext(UiSpModel uiSpModel) {
-        switch (uiSpModel.getCommand()) {
-            case ADD_NEW:
-                mView.updateItemInserted(uiSpModel.getIndex(), uiSpModel.getModel());
-                break;
-            case REPLACE:
-                mView.updateItemChanged(uiSpModel.getIndex(), uiSpModel.getModel());
-                break;
-            case REMOVE:
-                mView.updateItemRemoved(uiSpModel.getIndex());
-                break;
-        }
-    }
-
-    private UiSpModel uiMapper(SensorPuckModel spModel) {
-        int index = mSpList.indexOf(spModel);
-        UiSpModel result = new UiSpModel();
-        result.setModel(spModel);
-        result.setIndex(index);
-        if (index != -1) {
-            // spModel is present in mSpList so it should be updated or removed if
-            // its discovery time is more than SP_DISCOVERY_TIMEOUT
-            SensorPuckModel cur = mSpList.get(index);
-            long currentTime = System.currentTimeMillis();
-            if (currentTime - cur.getTimestamp() > SP_DISCOVERY_TIMEOUT) {
-                result.setCommand(UiSpModel.UiCommand.REMOVE);
-                mSpList.remove(result.getIndex());
-            } else {
-                result.setCommand(UiSpModel.UiCommand.REPLACE);
-                mSpList.remove(result.getIndex());
-                mSpList.add(result.getIndex(), result.getModel());
-            }
-        } else {
-            // it means that we have new one sp device so it should be just added
-            result.setCommand(ADD_NEW);
-            result.setIndex(mSpList.size());
-            mSpList.add(result.getIndex(), result.getModel());
-        }
-        return result;
+    public void onNext(List<SensorPuckModel> list) {
+        mView.updateItems(list);
     }
 
     private void handleBleException(BleScanException e) {
@@ -177,14 +137,5 @@ public class SPListPresenterImpl implements SPListPresenter, Observer<UiSpModel>
                 mView.showEnableLocationDialog();
                 break;
         }
-    }
-
-    private void restartAfterTimeout() {
-        if (mSpList.size() != 0) {
-            mSpList.clear();
-            mView.updateAllItemsRemoved();
-            mView.showError(SPError.CONNECTION_LOST);
-        }
-        startScan();
     }
 }
