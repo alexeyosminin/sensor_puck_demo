@@ -6,7 +6,7 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
         classpath 'com.google.guava:guava:19.0'
         classpath 'com.google.gms:google-services:3.0.0'
         classpath 'me.tatarka:gradle-retrolambda:3.3.1'
@@ -18,7 +18,6 @@ buildscript {
 allprojects {
     repositories {
         jcenter()
-        mavenCentral()
         maven { url "https://clojars.org/repo/" }
         maven { url 'http://oss.sonatype.org/content/repositories/snapshots' }
         maven { url 'https://jitpack.io' }
@@ -44,8 +43,9 @@ ext.deps = [
         butterknifeprocessor: 'com.jakewharton:butterknife-compiler:8.4.0',
 
         // Dagger
-        dagger: 'com.google.dagger:dagger:2.5',
-        daggercompiler: 'com.google.dagger:dagger-compiler:2.5',
+        dagger: 'com.google.dagger:dagger:2.9',
+        daggerandroid: 'com.google.dagger:dagger-android:2.9',
+        daggercompiler: 'com.google.dagger:dagger-compiler:2.9',
 
         //CardView
         cardview: 'com.android.support:cardview-v7:23.0.+',

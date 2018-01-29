@@ -6,15 +6,12 @@ import com.google.firebase.crash.FirebaseCrash;
 import com.osminin.sensorpuckdemo.ble.SPScannerInterface;
 import com.osminin.sensorpuckdemo.error.SPError;
 import com.osminin.sensorpuckdemo.model.SensorPuckModel;
-import com.osminin.sensorpuckdemo.model.UiSpModel;
 import com.osminin.sensorpuckdemo.presentation.interfaces.SPListPresenter;
 import com.osminin.sensorpuckdemo.ui.views.SPListView;
 import com.polidea.rxandroidble.exceptions.BleScanException;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -23,7 +20,6 @@ import rx.android.schedulers.AndroidSchedulers;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_BT;
 import static com.osminin.sensorpuckdemo.Constants.REQUEST_ENABLE_LOCATION;
 import static com.osminin.sensorpuckdemo.Constants.SP_DISCOVERY_TIMEOUT;
-import static com.osminin.sensorpuckdemo.model.UiSpModel.UiCommand.ADD_NEW;
 import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_CANNOT_START;
 import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_DISABLED;
 import static com.polidea.rxandroidble.exceptions.BleScanException.BLUETOOTH_NOT_AVAILABLE;
@@ -45,8 +41,8 @@ public class SPListPresenterImpl extends Subscriber<List<SensorPuckModel>> imple
     }
 
     @Override
-    public void setView(SPListView view) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "setView()");
+    public void bind(SPListView view) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "bind()");
         mView = view;
     }
 

@@ -37,7 +37,7 @@ public class SettingsFragment extends CustomPreferenceFragment implements Settin
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         addPreferencesFromResource(R.xml.preferences);
         App.getAppComponent(getActivity()).inject(this);
-        mPresenter.setView(this);
+        mPresenter.bind(this);
 
         String currentMode = mPresenter.getCurrentMode();
         ListPreference modePref = (ListPreference) findPreference(getString(R.string.settings_mode_key));

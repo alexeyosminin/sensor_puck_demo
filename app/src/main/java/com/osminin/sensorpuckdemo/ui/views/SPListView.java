@@ -36,4 +36,6 @@ public interface SPListView extends BaseView {
     void showLocationPermissionDialog();
 
     void showEnableLocationDialog();
+
+    List<SensorPuckModel> getCurrentDevices();
 }

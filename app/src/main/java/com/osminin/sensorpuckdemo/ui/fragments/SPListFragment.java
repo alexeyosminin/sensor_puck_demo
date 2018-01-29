@@ -91,14 +91,14 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
         super.onViewCreated(view, savedInstanceState);
         mUnbinder = ButterKnife.bind(this, view);
         initList();
-        mPresenter.setView(this);
+        mPresenter.bind(this);
     }
 
     @Override
     public void onDestroyView() {
         FirebaseCrash.logcat(Log.DEBUG, TAG, "onDestroyView");
         super.onDestroyView();
-        mPresenter.setView(null);
+        mPresenter.bind(null);
     }
 
     @Override
@@ -144,18 +144,21 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void updateItemInserted(int position, SensorPuckModel model) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "updateItemInserted: " + model.getName());
         mDevices.add(position, model);
         mAdapter.notifyItemInserted(position);
     }
 
     @Override
     public void updateItemRemoved(int position) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "updateItemRemoved: " + position);
         mDevices.remove(position);
         mAdapter.notifyItemRemoved(position);
     }
 
     @Override
     public void updateItemChanged(int position, SensorPuckModel model) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "updateItemChanged: " + position + " " + model.getName());
         mDevices.remove(position);
         mDevices.add(position, model);
         mAdapter.notifyItemChanged(position);
@@ -169,6 +172,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void updateAllItemsRemoved() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "updateAllItemsRemoved");
         int count = mDevices.size();
         mDevices.clear();
         mAdapter.notifyItemRangeRemoved(0, count);
@@ -191,6 +195,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void onSettingsChanged(int resultCode) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "onSettingsChanged: " + resultCode);
         if (resultCode == RESULT_OK) {
             mPresenter.onSettingsChanged();
         }
@@ -198,26 +203,35 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
 
     @Override
     public void restartWithNewConfig() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "restartWithNewConfig");
         mPresenter.stopScan();
         ((MainActivity) mContext).restartConfiguration();
     }
 
     @Override
     public void showAboutScreen() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "showAboutScreen");
         BaseFragment about = new AboutFragment();
         showFragment(about);
     }
 
     @Override
     public void showLocationPermissionDialog() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "showLocationPermissionDialog");
         requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},
                 REQUEST_LOCATION_PERMISSION);
     }
 
     @Override
     public void showEnableLocationDialog() {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "showEnableLocationDialog");
         Intent enableBtIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
         startActivityForResult(enableBtIntent, REQUEST_ENABLE_LOCATION);
+    }
+
+    @Override
+    public List<SensorPuckModel> getCurrentDevices() {
+        return mDevices;
     }
 
     @Override
@@ -240,6 +254,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
                                            @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "onRequestPermissionsResult");
         if (grantResults != null && grantResults.length != 0 &&
                 requestCode == REQUEST_LOCATION_PERMISSION) {
             mPresenter.onScannerFunctionalityEnabled(requestCode,
@@ -266,6 +281,7 @@ public final class SPListFragment extends BaseFragment implements SPListView, Ob
     }
 
     private void showFragment(BaseFragment fragment) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "showFragment");
         FragmentManager fragmentManager = ((AppCompatActivity) mContext).
                 getSupportFragmentManager();
         FragmentTransaction transaction = fragmentManager.beginTransaction();

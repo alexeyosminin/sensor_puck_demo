@@ -35,8 +35,8 @@ public final class SPDetailsPresenterImpl extends Subscriber<SensorPuckModel> im
     }
 
     @Override
-    public void setView(SPDetailsView view) {
-        FirebaseCrash.logcat(Log.VERBOSE, TAG, "setView");
+    public void bind(SPDetailsView view) {
+        FirebaseCrash.logcat(Log.VERBOSE, TAG, "bind");
         mView = view;
     }
 
